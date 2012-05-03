@@ -1,25 +1,49 @@
 #define false 0
 #define true 1
+
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 int verificaPalindromo(char* palavra){
-	int tam, i;
+	int tam, i, limite, ascii, somaascii=0;
+	
 	tam=strlen(palavra);
+	limite=floor((double) (tam)/ (double) 2);
+	
 	//printf("%d => %s\n", tam, palavra);
-	for(i=0; i<tam;i++){
-		printf("%c %c - %d %d\n",palavra[i],palavra[tam-1-i], i, (tam-1-i));
-		if(palavra[i]!=palavra[tam-1-i]) return false;
+	
+	for(i=0; i<limite;i++){
+		ascii=palavra[i];
+		somaascii+=(2*ascii);
+		//printf("%c %c %d - %d %d\n",palavra[i],palavra[tam-1-i], ascii, i, (tam-1-i));
+		if(palavra[i]!=palavra[tam-1-i]) return -1;
 	}
-	return true;
+	if(tam%2==1) {
+		ascii=palavra[limite];
+		somaascii+=ascii;
+	}
+	return somaascii;
 }
-int main(){
-	char palavra[] = "martram";
-	if(verificaPalindromo(palavra)){
-		printf("Palindromo");
+int somaAscii(char* palavra){
+	int tam, i, ascii, somaascii=0;
+	
+	tam=strlen(palavra);
+	for(i=0; i<tam;i++){
+		ascii=palavra[i];
+		somaascii+=ascii;
+	}
+	return somaascii;
+}
+int main(int argc, char *argv[]){ 
+	char palavra[strlen(argv[1])];
+	strcpy(palavra, argv[1]);
+	int ret=verificaPalindromo(palavra);
+	if(ret > 0){
+		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavra));
 	}else{
-		printf("Nao Palindromo");
+		printf("%s => Nao Palindromo", palavra);
 	}
 	printf("\n");
 	return 1;
