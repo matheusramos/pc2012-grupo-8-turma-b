@@ -26,6 +26,9 @@ int verificaPalindromo(char* palavra){
 	}
 	return somaascii;
 }
+/*
+ * Função para checagem, não será usada no programa final
+ */
 int somaAscii(char* palavra){
 	int tam, i, ascii, somaascii=0;
 	
@@ -37,8 +40,19 @@ int somaAscii(char* palavra){
 	return somaascii;
 }
 int main(int argc, char *argv[]){ 
-	char palavra[strlen(argv[1])];
-	strcpy(palavra, argv[1]);
+	int len;
+	char *palavra;
+	if(argc >= 2){
+		len=strlen(argv[1]);
+		palavra = malloc(len * sizeof(char));
+		strcpy(palavra, argv[1]);
+	}
+	else{
+		printf("ERRO: PALAVRA NÃO INFORMADA NOS ARGUMENTOS");
+		exit(1);
+	}
+	
+	
 	int ret=verificaPalindromo(palavra);
 	if(ret > 0){
 		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavra));
