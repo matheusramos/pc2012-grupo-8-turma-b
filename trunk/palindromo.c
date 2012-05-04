@@ -16,9 +16,13 @@ int verificaPalindromo(char* palavra){
 	
 	for(i=0; i<limite;i++){
 		ascii=palavra[i];
-		somaascii+=(2*ascii);
+		somaascii+=ascii;
+		ascii=palavra[tam-1-i];
+		somaascii+=ascii;
 		//printf("%c %c %d - %d %d\n",palavra[i],palavra[tam-1-i], ascii, i, (tam-1-i));
-		if(palavra[i]!=palavra[tam-1-i]) return -1;
+		if(palavra[i]!=palavra[tam-1-i]){ 
+			if(abs(palavra[i]-palavra[tam-1-i])!=32) return -1;
+		}
 	}
 	if(tam%2==1) {
 		ascii=palavra[limite];
