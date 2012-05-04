@@ -15,11 +15,8 @@ typedef struct
 void realoca (primos **p, int novo_tamanho)
 {
 	int i,*realocado;
-	realocado = realloc ((*p)->prime_list, novo_tamanho);
+	realocado = realloc ((*p)->prime_list, novo_tamanho * sizeof(int));
 	(*p)->prime_list = realocado;
-
-	for(i=0;i<= (*p)->last_index;++i)
-		printf("-Realocado%d\n-",realocado[i]);
 	
 }
 
@@ -64,13 +61,13 @@ int crivo(primos *list, int valor)
 					vetor[posicao]=-1;
 
 					//caso o vetor esteja no limite, ele eh realocado
-					//if(list->last_index == (list->max_len)-1)
-					//{
-						//int novo_tamanho = (list->max_len)*2;
-						//realoca(&list,novo_tamanho);
-						//list->max_len = novo_tamanho;
+					if(list->last_index == (list->max_len)-1)
+					{
+						int novo_tamanho = (list->max_len)*2;
+						realoca(&list,novo_tamanho);
+						list->max_len = novo_tamanho;
 	
-					//}
+					}
 				}	
 			
 			}
@@ -120,7 +117,7 @@ int main()
 	crivo(list,13);	
 
 	//monta a lista de primos ate 99
-	crivo(list,89);
+	crivo(list,2000);
 
 	for(i=0;i<=(list->last_index);++i)
 		printf("-%d-",(list->prime_list[i]));
