@@ -23,6 +23,24 @@ void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
 	(*particao)[byte_fim-byte_inicio] = '\0';
 }
 
+int buscarNaoSeparador(FILE *arq, int offset, char separador[])
+{
+	char c = 0;
+
+	fseek(arq,offset,SEEK_SET);
+
+	do
+	{
+		c = fgetc(arq);
+	}
+	while(isSeparador(c,separador));
+	
+	if (c == EOF)
+		return ftell(arq);
+	else
+		return (ftell(arq)-1);
+}
+
 /**
  * Regras para separadores:
  * argc = 0 -> separadores: espaço, \n\r (ARQUIVO PEQUENO)
@@ -32,10 +50,9 @@ int main(int argc, char **argv)
 {
 	FILE *arq = NULL;
 	long int tamanho_bytes = 0;
-	char *particao_texto[NUM_PROCESSORS], c = 0, separador[4];
-	int flag_saida = 0, flag_separador = 0;
+	char *particao_texto[NUM_PROCESSORS], separador[4];
 	register int i=0;
-	int bloco_inicio=0, bloco_fim=0;
+	int byte_inicio=0, byte_fim=0;
 
 	FILE *particao_teste[NUM_PROCESSORS];
 	char name[10];
@@ -69,44 +86,21 @@ int main(int argc, char **argv)
 	 * Aqui o arquivo vai ser divido em partes, o critério de divisão é o tamanho do arquivo e a ocorrência
 	 * de um separador para que um palíndromo não seja cortado em dois pedaços.
 	 */
-	for(i=1; i<=NUM_PROCESSORS; i++)
+	for(i=0; i<NUM_PROCESSORS; i++)
 	{
-		flag_separador = 0;
-		flag_saida = 0;
+		byte_inicio = (int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)); 
+		byte_inicio = buscarNaoSeparador(arq,byte_inicio, separador);
 
-		fseek(arq,i*(tamanho_bytes/NUM_PROCESSORS),SEEK_SET);
-
-		do
-		{
-			c = fgetc(arq);
-			
-			if (isSeparador(c,separador) || feof(arq)) /*acha o primeiro separador e marca a flag para consumir os seguintes*/ 
-			{
-				/*Achou o bloco_fimd e uma partição, monta a partição*/
-				if(flag_separador == 0)
-				{
-					bloco_fim = ftell(arq)-1; /**/
-					montarParticao(arq,&particao_texto[i-1],bloco_inicio,bloco_fim);
-
-					printf("Byte inicial=%d, byte final=%d\n",bloco_inicio,bloco_fim);
-	
-					flag_separador=1;
-				}
-			}
-			else if(flag_separador == 1)
-			{
-				flag_saida = 1;
-				bloco_inicio = ftell(arq); /* Seta o início da partição de dados */
-			}
-
-			if(feof(arq))
-				flag_saida = 1;
-		}while(!flag_saida);
-
+		byte_fim = (int)(tamanho_bytes*((float)(i+1)/(float)NUM_PROCESSORS));
+		byte_fim = buscarNaoSeparador(arq,byte_fim, separador);
 		
-		printf("Separação em %ld\n",ftell(arq));
+		printf("%d\n",(int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)));
+		printf("Byte inicial=%d, byte final=%d\n",byte_inicio,byte_fim);
+
+		montarParticao(arq,&particao_texto[i],byte_inicio,byte_fim);
 	}
 	
+	/*Faz arquivos para teste*/
 	for(i=0; i<NUM_PROCESSORS; i++)
 	{
 		sprintf(name,"teste_%d",i);
