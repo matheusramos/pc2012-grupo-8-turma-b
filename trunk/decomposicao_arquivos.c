@@ -75,9 +75,13 @@ int main(int argc, char **argv)
 				/*Achou o bloco_fimd e uma partição, monta a partição*/
 				if(flag_separador == 0)
 				{
-					bloco_fim = ftell(arq); /**/
-					particao_texto[i-1] = (char *) malloc( (bloco_fim-bloco_inicio)*sizeof(char));
-					fread(particao_texto[i-1],sizeof(char),bloco_fim-bloco_inicio-1,arq);
+					bloco_fim = ftell(arq)-1; /**/
+					particao_texto[i-1] = (char *) malloc( (bloco_fim-bloco_inicio+1)*sizeof(char));
+
+					/*Leitura dos dados*/
+					fseek(arq,bloco_inicio,SEEK_SET);
+					fread(particao_texto[i-1],sizeof(char),bloco_fim-bloco_inicio,arq);
+
 					particao_texto[i-1][bloco_fim-bloco_inicio-1] = '\0';
 					printf("Byte inicial=%d, byte final=%d\n",bloco_inicio,bloco_fim);
 	
