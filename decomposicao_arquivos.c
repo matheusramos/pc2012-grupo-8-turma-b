@@ -6,10 +6,21 @@
 
 int isSeparador(char c, char separador[])
 {
-	if (strchr(separador,c) == NULL)
+	if (strchr(separador,c) == NULL || c == EOF)
 		return 0;
 	else
 		return 1;
+}
+
+void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
+{
+	*particao = (char *) malloc( (byte_fim-byte_inicio+1)*sizeof(char));
+
+	/*Leitura dos dados*/
+	fseek(arq,byte_inicio,SEEK_SET);
+	fread(*particao,sizeof(char),byte_fim-byte_inicio,arq);
+
+	(*particao)[byte_fim-byte_inicio] = '\0';
 }
 
 /**
@@ -62,27 +73,21 @@ int main(int argc, char **argv)
 	{
 		flag_separador = 0;
 		flag_saida = 0;
+
 		fseek(arq,i*(tamanho_bytes/NUM_PROCESSORS),SEEK_SET);
 
 		do
 		{
 			c = fgetc(arq);
 			
-			/*TODO o fread avanca o nro de bytes que ele le,devo dar um fseek, depois um fread,  epossivelmente um fseek para colocar no lugar certo novamente*/
-			
-			if (isSeparador(c,separador)) /*acha o primeiro separador e marca a flag para consumir os seguintes*/ 
+			if (isSeparador(c,separador) || feof(arq)) /*acha o primeiro separador e marca a flag para consumir os seguintes*/ 
 			{
 				/*Achou o bloco_fimd e uma partição, monta a partição*/
 				if(flag_separador == 0)
 				{
 					bloco_fim = ftell(arq)-1; /**/
-					particao_texto[i-1] = (char *) malloc( (bloco_fim-bloco_inicio+1)*sizeof(char));
+					montarParticao(arq,&particao_texto[i-1],bloco_inicio,bloco_fim);
 
-					/*Leitura dos dados*/
-					fseek(arq,bloco_inicio,SEEK_SET);
-					fread(particao_texto[i-1],sizeof(char),bloco_fim-bloco_inicio,arq);
-
-					particao_texto[i-1][bloco_fim-bloco_inicio-1] = '\0';
 					printf("Byte inicial=%d, byte final=%d\n",bloco_inicio,bloco_fim);
 	
 					flag_separador=1;
@@ -93,6 +98,9 @@ int main(int argc, char **argv)
 				flag_saida = 1;
 				bloco_inicio = ftell(arq); /* Seta o início da partição de dados */
 			}
+
+			if(feof(arq))
+				flag_saida = 1;
 		}while(!flag_saida);
 
 		
@@ -101,7 +109,7 @@ int main(int argc, char **argv)
 	
 	for(i=0; i<NUM_PROCESSORS; i++)
 	{
-		sprintf(name,"teste %d",i);
+		sprintf(name,"teste_%d",i);
 		particao_teste[i] = fopen(name,"w+");
 		fseek(particao_teste[i],0,SEEK_SET);
 		fputs(particao_texto[i],particao_teste[i]);
