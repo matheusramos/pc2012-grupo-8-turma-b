@@ -30,6 +30,19 @@ int verificaPalindromoPar(char* palavra){
 	return somaascii;
 }
 
+void removeCaracter(char* palavra, char caracter, char* palavranova){
+	char p;
+	int i=0, j=0;
+	do{
+		p=palavra[i];
+		if(p!=caracter){
+			palavranova[j]=p;
+			j++;
+		}
+		i++;
+	}while(p!='\0');
+}
+
 int verificaPalindromo(char* palavra){
 	int tam, i, limite, ascii, somaascii=0;
 	
@@ -69,25 +82,28 @@ int somaAscii(char* palavra){
 }
 int main(int argc, char *argv[]){ 
 	int len;
-	char *palavra;
+	char *palavra, *palavrasemspacos;
 	if(argc >= 2){
 		len=strlen(argv[1]);
 		palavra = malloc(len * sizeof(char));
 		strcpy(palavra, argv[1]);
+		palavrasemspacos = malloc(len * sizeof(char));
 	}
 	else{
 		printf("ERRO: PALAVRA NÃO INFORMADA NOS ARGUMENTOS");
 		exit(1);
 	}
-	
+	palavra="A droga da gorda";
+	removeCaracter(palavra,' ',palavrasemspacos);
+	printf("%s\n", palavrasemspacos);
 	int j,ret;
 	for(j=0;j<100000;j++){
-		ret=verificaPalindromoPar(palavra);
+		ret=verificaPalindromoPar(palavrasemspacos);
 	}
 	if(ret > 0){
-		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavra));
+		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavrasemspacos));
 	}else{
-		printf("%s => Nao Palindromo", palavra);
+		printf("%s => Nao Palindromo", palavrasemspacos);
 	}
 	printf("\n");
 	return 1;
