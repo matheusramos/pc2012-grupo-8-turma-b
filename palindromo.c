@@ -6,6 +6,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+int verificaPalindromoPar(char* palavra){
+	int tam, i, limite, ascii, somaascii=0, ret=1;
+	
+	tam=strlen(palavra);
+	limite=floor((double) (tam)/ (double) 2);
+	
+	omp_set_num_threads(4);
+	#pragma omp parallel for reduction (+:somaascii) reduction(&&:ret)
+	for(i=0; i<limite;i++){
+		somaascii+=palavra[i]+palavra[tam-1-i];
+		if(palavra[i]!=palavra[tam-1-i]){ 
+			if(abs(palavra[i]-palavra[tam-1-i])!=32) ret=0;
+		}
+	}
+	if(ret==0){
+		return -1;
+	}
+	if(tam%2==1) {
+		ascii=palavra[limite];
+		somaascii+=ascii;
+	}
+	return somaascii;
+}
+
 int verificaPalindromo(char* palavra){
 	int tam, i, limite, ascii, somaascii=0;
 	
@@ -56,8 +80,10 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	
-	
-	int ret=verificaPalindromo(palavra);
+	int j,ret;
+	for(j=0;j<100000;j++){
+		ret=verificaPalindromoPar(palavra);
+	}
 	if(ret > 0){
 		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavra));
 	}else{
