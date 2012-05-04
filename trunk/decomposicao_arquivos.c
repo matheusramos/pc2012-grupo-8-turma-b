@@ -4,6 +4,9 @@
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
 
+/**
+ * Verifica o caractere c é um separador ou EOF.
+ */
 int isSeparador(char c, char separador[])
 {
 	if (strchr(separador,c) == NULL || c == EOF)
@@ -12,9 +15,13 @@ int isSeparador(char c, char separador[])
 		return 1;
 }
 
+/**
+ * Funcao que recebe o byte em que começa a partição e o que termina e copia
+ * os dados para a string particão.
+ */
 void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
 {
-	*particao = (char *) malloc( (byte_fim-byte_inicio+1)*sizeof(char));
+	*particao = (char *) malloc( (byte_fim-byte_inicio+1)*sizeof(char)); /*Aloca exatamente o tamanho necessário para a particao +1 para o \0*/
 
 	/*Leitura dos dados*/
 	fseek(arq,byte_inicio,SEEK_SET);
@@ -23,6 +30,11 @@ void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
 	(*particao)[byte_fim-byte_inicio] = '\0';
 }
 
+/**
+ * Função que irá buscar um separador no stream apartir do offset
+ * o retorno é o offset do ultimo caractere antes do separador
+ * ou o EOF.
+ */
 int buscarNaoSeparador(FILE *arq, int offset, char separador[])
 {
 	char c = 0;
@@ -88,15 +100,20 @@ int main(int argc, char **argv)
 	 */
 	for(i=0; i<NUM_PROCESSORS; i++)
 	{
+		/*Calcula o byte de início da partição, corre o stream até achar um separador*/
 		byte_inicio = (int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)); 
 		byte_inicio = buscarNaoSeparador(arq,byte_inicio, separador);
-
+		/*Calcula o byte final da partição, corre o stram até achado um separador ou EOF*/
 		byte_fim = (int)(tamanho_bytes*((float)(i+1)/(float)NUM_PROCESSORS));
 		byte_fim = buscarNaoSeparador(arq,byte_fim, separador);
-		
+
+		/*Impressão para checagem*/
+		/*
 		printf("%d\n",(int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)));
 		printf("Byte inicial=%d, byte final=%d\n",byte_inicio,byte_fim);
+		*/
 
+		/*Transfere a partição para uma string*/
 		montarParticao(arq,&particao_texto[i],byte_inicio,byte_fim);
 	}
 	
