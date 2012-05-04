@@ -28,12 +28,11 @@ int crivo(primos *list, int valor)
 
 	int i,j;
 	int *vetor,prime;
-	int raiz = sqrt(valor);
 
 	//temos que calcular mais primos
-	if(raiz > (list->last_prime))
+	if(valor > (list->last_prime))
 	{
-		int tamanho = raiz - (list->last_prime);
+		int tamanho = valor - (list->last_prime);
 
 		vetor = malloc(tamanho*sizeof(int));	
 		//preenche o vetor
@@ -79,25 +78,23 @@ int crivo(primos *list, int valor)
 		
 	}	
 	
-	//depois que montou a tabela de primos vai dividindo... (nao tem como ter busca binaria)
+	//depois que montou a tabela verifica se o valor esta na tabela
 	int inf=0,pos,meio;
-	int achou=0;
 	pos  = list->last_index;
 	while(inf<=pos)
 	{
 		int meio=(inf+pos)/2;
 		if(list->prime_list[meio]==valor)
 		{
-			printf("Achouuu eh primo");
-			return 1;
+			printf("O numero %d eh primo\n",valor);
+			break;
 		}
 		else if (list->prime_list[meio]<valor)
 			inf = meio+1;
 		else
 			pos = meio-1;
 	}
-	
-	
+
 	return 1;
 }
 
@@ -115,8 +112,15 @@ int main()
 	list->max_len = MAXLENGTH;
 	list->prime_list = malloc ((MAXLENGTH)*sizeof(int));
 	list->prime_list[0]=2;
+	
+	//monta a lista de primos ate a 88
+	crivo(list,88);	
 
-	crivo(list,997);	
+	//essa chamada apenas verifica na lista de primos
+	crivo(list,13);	
+
+	//monta a lista de primos ate 99
+	crivo(list,89);
 
 	for(i=0;i<=(list->last_index);++i)
 		printf("-%d-",(list->prime_list[i]));
