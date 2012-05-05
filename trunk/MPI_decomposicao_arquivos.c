@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<mpi.h>
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
 
@@ -62,16 +63,33 @@ int main(int argc, char *argv[])
 {
 	FILE *arq = NULL;
 	long int tamanho_bytes = 0;
-	char *particao_texto[NUM_PROCESSORS], separador[4];
-	register int i=0;
+	char **particao_texto, separador[4];
+	int p,id;
 	int byte_inicio=0, byte_fim=0;
 
-	FILE *particao_teste[NUM_PROCESSORS];
+	FILE **particao_teste;
 	char name[10];
+	int new_argc=4;
+	char **new_argv;
+
+	new_argv =  malloc (4* sizeof(char *));
 	
-	/*Definição dos separadores*/
+	new_argv[0]="mpirun";
+	new_argv[1]="-np";
+	new_argv[2]="16";
+	new_argv[3]="nomeexecutavel";
+	
+	/*Definição dos separadores*/	
 	separador[0]='\n';
 	separador[1]='\r';
+
+	MPI_Init(&new_argc, &new_argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &id);
+	MPI_Comm_size(MPI_COMM_WORLD, &p);
+
+	particao_texto =  malloc (p* sizeof(char *));
+	particao_teste = malloc (p* sizeof(FILE *));
+
 	if (argc == 0)
 	{
 		separador[2]=' ';
@@ -98,34 +116,33 @@ int main(int argc, char *argv[])
 	 * Aqui o arquivo vai ser divido em partes, o critério de divisão é o tamanho do arquivo e a ocorrência
 	 * de um separador para que um palíndromo não seja cortado em dois pedaços.
 	 */
-	for(i=0; i<NUM_PROCESSORS; i++)
-	{
-		/*Calcula o byte de início da partição, corre o stream até achar um separador*/
-		byte_inicio = (int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)); 
-		byte_inicio = buscarNaoSeparador(arq,byte_inicio, separador);
-		/*Calcula o byte final da partição, corre o stram até achado um separador ou EOF*/
-		byte_fim = (int)(tamanho_bytes*((float)(i+1)/(float)NUM_PROCESSORS));
-		byte_fim = buscarNaoSeparador(arq,byte_fim, separador);
+	
+	/*Calcula o byte de início da partição, corre o stream até achar um separador*/
+	byte_inicio = (int)(tamanho_bytes*((float)id/(float)p)); 
+	byte_inicio = buscarNaoSeparador(arq,byte_inicio, separador);
+	/*Calcula o byte final da partição, corre o stram até achado um separador ou EOF*/
+	byte_fim = (int)(tamanho_bytes*((float)(id+1)/(float)p));
+	byte_fim = buscarNaoSeparador(arq,byte_fim, separador);
 
-		/*Impressão para checagem*/
-		/*
-		printf("%d\n",(int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)));
-		printf("Byte inicial=%d, byte final=%d\n",byte_inicio,byte_fim);
-		*/
+	/*Impressão para checagem*/
+	
+	printf("%d\n",(int)(tamanho_bytes*((float)id/(float) p)));
+	printf("Byte inicial=%d, byte final=%d\n",byte_inicio,byte_fim);
+	
+	fflush(stdout);
+	/*Transfere a partição para uma string*/
+	montarParticao(arq,&particao_texto[id],byte_inicio,byte_fim);
 
-		/*Transfere a partição para uma string*/
-		montarParticao(arq,&particao_texto[i],byte_inicio,byte_fim);
-	}
 	
 	/*Faz arquivos para teste*/
-	for(i=0; i<NUM_PROCESSORS; i++)
-	{
-		sprintf(name,"teste_%d",i);
-		particao_teste[i] = fopen(name,"w+");
-		fseek(particao_teste[i],0,SEEK_SET);
-		fputs(particao_texto[i],particao_teste[i]);
-		fclose(particao_teste[i]);
-	}
+	sprintf(name,"teste_%d",id);
+	particao_teste[id] = fopen(name,"w+");
+	fseek(particao_teste[id],0,SEEK_SET);
+	fputs(particao_texto[id],particao_teste[id]);
+	fclose(particao_teste[id]);
+
+	MPI_Finalize();
+
 
 	if (!fclose(arq)) /*Tenta fechar o ponteiro do arquivo*/ 
 		return EXIT_FAILURE;
