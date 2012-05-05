@@ -62,10 +62,9 @@ int buscarNaoSeparador(char *str, int indice, char separador[])
 {
 	register int i=0;
 
-	for(i=indice, !isSeparador(str[i]); i++)
-	{
+	for(i=indice, !isSeparador(str[i]) && !str[i]!='\0'; i++);
 
-	}
+	if
 }
 
 void removeCaracter(char* palavra, char caracter, char* palavranova){
@@ -200,4 +199,5 @@ int main(int argc, char **argv)
 
 	return EXIT_SUCCESS;
 }
+
 
