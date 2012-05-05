@@ -6,6 +6,12 @@
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
 
+/*
+ *
+ * TODO Testar as bordas das partições.
+ *
+ */
+
 /**
  * Verifica o caractere c é um separador ou EOF.
  */
@@ -36,35 +42,64 @@ void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
  * Função que irá buscar um separador no stream apartir do offset
  * o retorno é o offset do ultimo caractere antes do separador
  * ou o EOF.
+ *
+ * Se o caracter atual for um Separador, correrá para a esquerda, caso contrário, irá para a direita.
  */
-int buscarNaoSeparador(FILE *arq, int offset, char separador[])
+int buscarUltimoNaoSeparador(FILE *arq, int offset, char separador[])
 {
 	char c = 0;
+	long int i=0
 
 	fseek(arq,offset,SEEK_SET);
 
-	do
+	c = fgetc(arq);
+
+	if(isSeparador(c,separador)) /*Vai para esquerda*/
 	{
-		c = fgetc(arq);
+		for(i=offset; isSeparador(c,separador); i--)
+		{
+			fseek(arq,i,SEEK_SET);
+			c = fgetc(arq);
+		}
+		i = ftell(arq)+1;
 	}
-	while(isSeparador(c,separador));
+	else /*vai para direita*/
+	{
+		do
+		{
+			c = fgetc(arq);
+		}
+		while(isSeparador(c,separador));
+		i = ftell(arq);
+	}
 	
 	if (c == EOF)
-		return ftell(arq);
+		return i;
 	else
-		return (ftell(arq)-1);
+		return i-1;
 }
 
 /**
  * Função semelhante a de cima, porém busca o não separador em uma string
  */
-int buscarNaoSeparador(char *str, int indice, char separador[])
+int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[], char direcao)
 {
-	register int i=0;
+	long int i=0;
 
-	for(i=indice, !isSeparador(str[i]) && !str[i]!='\0'; i++);
+	if(isSeparador(c,separador)) /*Vai para a esquerda*/
+	{
+		for(i=offset; isSeparador(str[i],separador); i--);
+		i ++;
+	}
+	else
+	{
+		for(i=indice, !isSeparador(str[i]) && !str[i]!='\0'; i++);
+	}
 
-	if
+	if(str[i] == '\0')
+		return i;
+	else
+		return i-1;
 }
 
 void removeCaracter(char* palavra, char caracter, char* palavranova){
@@ -136,6 +171,7 @@ int main(int argc, char **argv)
 	/*Variáveis partição*/
 	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
 	short int fator_thread=1; /*Quantos threads serão criadas para verificar as partições (será multiplicado pelo número máximo de threads)*/
+	char palindromo[1024];
 
 	/*Definição dos separadores*/
 	separador[0]='\n';
@@ -170,10 +206,10 @@ int main(int argc, char **argv)
 	{
 		/*Calcula o byte de início da partição, corre o stream até achar um separador*/
 		byte_inicio = (int)(tamanho_bytes*((float)i/(float)NUM_PROCESSORS)); 
-		byte_inicio = buscarNaoSeparador(arq,byte_inicio, separador);
+		byte_inicio = buscarUltimoNaoSeparador(arq,byte_inicio, separador);
 		/*Calcula o byte final da partição, corre o stram até achado um separador ou EOF*/
 		byte_fim = (int)(tamanho_bytes*((float)(i+1)/(float)NUM_PROCESSORS));
-		byte_fim = buscarNaoSeparador(arq,byte_fim, separador);
+		byte_fim = buscarUltimoNaoSeparador(arq,byte_fim, separador);
 
 		/*Impressão para checagem*/
 		/*
@@ -189,8 +225,22 @@ int main(int argc, char **argv)
 		#pragma openmp parallel for private(part_offset_inic, part_offset_fim)
 		for(j=0; j<fator_thread*omp_get_num_proc; j++)
 		{
-			part_offset_inic = (int)(j*((float)particao_tamanho/(float)omp_get_num_proc()));
-			part_offset_fim =	buscarNaoSeparador();
+			part_offset_inic = (int)(particao_tamanho*((float)j/(float)omp_get_num_proc()));
+			part_offset_inic =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_inic,separador);
+
+			part_offset_fim = (int)(particao_tamanho*((float)j/(float)omp_get_num_proc()));
+			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_fim,separador);
+
+			particao_texto[i][part_set_fim+1] = '\0'; /*Seta como \0 o ultimo caractere da subparticao para que o strtok() pare (sobrescreve um separador)*/
+
+			/* VERIFICAÇÃO DE PALÍNDROMOS */
+			palin_candidate = strtok(particao_texto[i][part_offset_inic],separadores);
+
+			while(palin_candidate != NULL)
+			{
+				verificaPalindromo(palin_candidate);
+				palin_candidate = strtok(NULL,separador);
+			}
 		}
 	}
 	
