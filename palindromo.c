@@ -98,7 +98,7 @@ int main(int argc, char *argv[]){
 	printf("%s\n", palavrasemspacos);
 	int j,ret;
 	for(j=0;j<100000;j++){
-		ret=verificaPalindromoPar(palavrasemspacos);
+		ret=verificaPalindromo(palavrasemspacos);
 	}
 	if(ret > 0){
 		printf("%s => Palindromo com soma ASCII: %d %d", palavra, ret, somaAscii(palavrasemspacos));
