@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
+#include<omp.h>
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
 
@@ -52,6 +53,19 @@ int buscarNaoSeparador(FILE *arq, int offset, char separador[])
 		return ftell(arq);
 	else
 		return (ftell(arq)-1);
+}
+
+/**
+ * Função semelhante a de cima, porém busca o não separador em uma string
+ */
+int buscarNaoSeparador(char *str, int indice, char separador[])
+{
+	register int i=0;
+
+	for(i=indice, !isSeparador(str[i]); i++)
+	{
+
+	}
 }
 
 void removeCaracter(char* palavra, char caracter, char* palavranova){
@@ -115,10 +129,14 @@ int somaAscii(char* palavra){
 int main(int argc, char **argv)
 {
 	FILE *arq=NULL;
-	long int tamanho_bytes=0, tamanho_particao=0;
+	long int tamanho_bytes=0;
 	char *particao_texto[NUM_PROCESSORS], separador[4];
-	register int i=0;
+	register int i=0,j=0;
 	int byte_inicio=0, byte_fim=0;
+
+	/*Variáveis partição*/
+	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
+	short int fator_thread=1; /*Quantos threads serão criadas para verificar as partições (será multiplicado pelo número máximo de threads)*/
 
 	/*Definição dos separadores*/
 	separador[0]='\n';
@@ -167,8 +185,14 @@ int main(int argc, char **argv)
 		/*Transfere a partição para uma string*/
 		montarParticao(arq,&particao_texto[i],byte_inicio,byte_fim);
 		
-		tamanho_particao = byte_fim-byte_inicio; /*Calcula o tamanho da partição para economizar em chamadas ao strlen()*/
-
+		particao_tamanho = byte_fim-byte_inicio; /*Calcula o tamanho da partição para economizar em chamadas ao strlen()*/
+		
+		#pragma openmp parallel for private(part_offset_inic, part_offset_fim)
+		for(j=0; j<fator_thread*omp_get_num_proc; j++)
+		{
+			part_offset_inic = (int)(j*((float)particao_tamanho/(float)omp_get_num_proc()));
+			part_offset_fim =	buscarNaoSeparador();
+		}
 	}
 	
 	if (!fclose(arq)) /*Tenta fechar o ponteiro do arquivo*/ 
