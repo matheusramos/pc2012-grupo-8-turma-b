@@ -69,37 +69,30 @@ int main(int argc, char *argv[])
 
 	FILE **particao_teste;
 	char name[10];
-	int new_argc=4;
-	char **new_argv;
-
-	new_argv =  malloc (4* sizeof(char *));
-	
-	new_argv[0]="mpirun";
-	new_argv[1]="-np";
-	new_argv[2]="16";
-	new_argv[3]="nomeexecutavel";
+	int arquivo=1;
 	
 	/*Definição dos separadores*/	
 	separador[0]='\n';
 	separador[1]='\r';
 
-	MPI_Init(&new_argc, &new_argv);
+	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
 	particao_texto =  malloc (p* sizeof(char *));
 	particao_teste = malloc (p* sizeof(FILE *));
 
-	if (argc == 0)
+	if (arquivo == 0)
 	{
 		separador[2]=' ';
+		arq = fopen("wikipedia.txt","r+"); /*Abre o arquivo*/
 	}
+	else
+		arq = fopen("shakespe.txt","r+"); /*Abre o arquivo*/
+
+
 	separador[3]='\0';
 	
-	printf("Arquivo: %s\n",argv[2]);
-	printf("Tipo arquivo = %d\n",atoi(argv[1]));
-
-	arq = fopen(argv[2],"r+"); /*Abre o arquivo*/
 	if (arq == NULL) /*Verifica se o arquivo existe*/
 		return EXIT_FAILURE;
 
