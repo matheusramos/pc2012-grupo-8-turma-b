@@ -105,7 +105,7 @@ int verificaPalindromo(char* palavra){
 		somaascii+=ascii;
 		//printf("%c %c %d - %d %d\n",palavra[i],palavra[tam-1-i], ascii, i, (tam-1-i));
 		if(palavra[i]!=palavra[tam-1-i]){ 
-			if(abs(palavra[i]-palavra[tam-1-i])!=32) return -1;
+			if((abs(palavra[i]-palavra[tam-1-i])!=32) || palavra[i]<65 || palavra[tam-1-i]<65) return -1;
 		}
 	}
 	if(tam%2==1) {
