@@ -231,69 +231,82 @@ int somaAscii(char* palavra){
 	return somaascii;
 }
 
-void imprimePalindromos(char *str, char separador[], primos *list, int flag_arquivo)
+void imprimePalindromosFrase(char *str, char separador[], primos *list)
 {
-	char *palin_candidate;
-	char *str_aux=NULL;
-	char str_frase[1024];
-	str_aux[0] = '\0';
+	char *palin_candidate, *sem_espaco;
 	int ascii_palindromo=0;
-	
 	/* VERIFICAÇÃO DE PALÍNDROMOS NAS PALAVRAS*/
 	palin_candidate = strtok((char *) str,separador);
 	
 	while(palin_candidate != NULL)
 	{
-		
-		/*Vai dividir a frase em palavras chamar a funcao e concatenar a frase sem espaços*/
-		if(flag_arquivo == ARQUIVO_PEQUENO)
+		sem_espaco = (char *) malloc(strlen(palin_candidate)*sizeof(char));
+		removeCaracter(palin_candidate,' ',sem_espaco);
+
+		if(strlen(sem_espaco) >1)
 		{
-			str_aux = strtok(palin_candidate," ");
-			while(str_aux != NULL)
-			{
-				printf("PALINDROMO PALAVRA DENTRO DA FRASE: %s\n",str_aux);
-				fflush(stdout);
-				ascii_palindromo = verificaPalindromo(palin_candidate);
-				strcat(str_frase,str_aux);
-				str_aux = strtok(NULL," ");
-			}
-			printf("PALINDROMO FRASE: %s\n",str_frase);
+			ascii_palindromo = verificaPalindromo(sem_espaco);
+
+			/*
+			printf("SEM ESPACO: %s\n",sem_espaco);
 			fflush(stdout);
+			*/
+			
+			
+			 
+			if(ascii_palindromo > 0)
+			{
+				if(crivo(list,ascii_palindromo))
+					printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",sem_espaco,ascii_palindromo);
+				else
+					printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",sem_espaco,ascii_palindromo);
+				fflush(stdout);
+			}
 		}
-		else
+		free(sem_espaco);
+
+		palin_candidate = strtok(NULL,separador);
+	}
+
+}
+
+void imprimePalindromosPalavra(char *str, char separador[], primos *list)
+{
+	char *palin_candidate, *str_palavra; 	
+	int ascii_palindromo=0;
+	separador[8]=' ';
+	
+	//usada para cópia para que a string original não seja destruída pelo strtok()
+	str_palavra = (char *) malloc((strlen(str)+1)*sizeof(char));
+	strcpy(str_palavra,str);
+	/* VERIFICAÇÃO DE PALÍNDROMOS NAS PALAVRAS*/
+	palin_candidate = strtok((char *) str_palavra,separador);
+	
+	while(palin_candidate != NULL)
+	{
+		if(strlen(palin_candidate)>1)
 		{
 			ascii_palindromo = verificaPalindromo(palin_candidate);
-		}
 
-		/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
-		fflush(stdout);
-		*/
-		 
-	if(ascii_palindromo > 0)
-		{
-			if(crivo(list,ascii_palindromo))
-				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(palin_candidate));
-			else
-				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(palin_candidate));
+			/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
 			fflush(stdout);
+			*/
+			 
+			if(ascii_palindromo > 0)
+			{
+				if(crivo(list,ascii_palindromo))
+					printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,ascii_palindromo);
+				else
+					printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,ascii_palindromo);
+				fflush(stdout);
+			}
 		}
 	
 		palin_candidate = strtok(NULL,separador);
 	}
-	/*VERIFICACAO DE PALINDROMOS NAS FRASES*/
-	
-	if(flag_arquivo == ARQUIVO_PEQUENO)
-	{
-		if(ascii_palindromo > 0)
-		{
-			if(crivo(list,ascii_palindromo))
-				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(str_aux));
-			else
-				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(str_aux));
-			fflush(stdout);
-		}
-	}
-	
+
+	free(str_palavra);
+	separador[8] = '\0';
 }
 
 /**
@@ -330,19 +343,16 @@ int main(int argc, char **argv)
 	separador[1]='\r';
 	separador[2]='\t';
 	separador[3]='.';
-	separador[4]=',';
-	separador[5]='!';
-	separador[6]='?';
-	separador[7]='-';
-	separador[8]='|';
-	separador[9]='\'';
-	separador[10]='\"';
-	separador[11]='\0';
+	separador[4]='!';
+	separador[5]='?';
+	separador[6]='-';
+	separador[7]='\'';
+	separador[8]='\0';
 	if (flag_arquivo == ARQUIVO_GRANDE)
 	{
-		separador[11]=' ';
-		separador[12]='\0';
+		separador[8]=' ';
 	}
+	separador[9]='\0';
 	
 	/*
 	printf("Arquivo: %s\n",argv[2]);
@@ -405,14 +415,14 @@ int main(int argc, char **argv)
 			strncpy(str_subpart,&(particao_texto[i][part_offset_inic]), part_offset_fim-part_offset_inic);
 			str_subpart[part_offset_fim-part_offset_inic] = '\0';
 
-
-
-			
 			/*Calcula palindromos e primos*/
 			if(flag_arquivo == ARQUIVO_PEQUENO)
-				imprimePalindromos(str_subpart, separador, list, ARQUIVO_PEQUENO);
+			{
+				imprimePalindromosPalavra(str_subpart, separador, list);
+				imprimePalindromosFrase(str_subpart,separador,list);
+			}
 			else
-				imprimePalindromos(str_subpart, separador, list, ARQUIVO_GRANDE);
+				imprimePalindromosPalavra(str_subpart, separador, list);
 			
 			free(str_subpart); //libera a memória da subparticao
 		}
