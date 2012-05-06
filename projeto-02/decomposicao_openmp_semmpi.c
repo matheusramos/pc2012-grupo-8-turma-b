@@ -251,8 +251,6 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 			printf("SEM ESPACO: %s\n",sem_espaco);
 			fflush(stdout);
 			*/
-			
-			
 			 
 			if(ascii_palindromo > 0)
 			{
@@ -428,6 +426,9 @@ int main(int argc, char **argv)
 		}
 		free(particao_texto[i]); //libera a memória da partição
 	}
+
+	free(list->prime_list);
+	free(list);
 	
 	/*Faz arquivos para teste*/
 	/*for(i=0; i<NUM_PROCESSORS; i++)
