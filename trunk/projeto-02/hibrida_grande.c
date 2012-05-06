@@ -9,11 +9,9 @@
 #define ARQUIVO_PEQUENO 0
 #define ARQUIVO_GRANDE 1
 
-/*
- *
- *
+/**
+ * Struct utilizada para gerenciar lista de números primos
  */
-
 typedef struct
 {
 	int last_index;
@@ -21,7 +19,9 @@ typedef struct
 	int max_len;
 	int *prime_list;
 }primos;
-
+/**
+ * Função que realoca memória em caso de ultrapassar a quantidade de primos na lista de primos
+ */
 void realoca (primos **p, int novo_tamanho)
 {
 	int *realocado;
@@ -29,7 +29,13 @@ void realoca (primos **p, int novo_tamanho)
 	(*p)->prime_list = realocado;
 	
 }
-
+/**
+ * Função que verifica se um numero é primo pelo algoritmo do crivo de Eratóstenes
+ * Recebe a lista de primos e o valor para checagem
+ * Retorna 1 se for primo e 0 caso contrário
+ * Executa em paralelo o preenchimento do vetor auxiliar (tabela de marcação 
+ * e o procedimento de marcação
+ */
 int crivo(primos *list, int valor)
 { 
 
@@ -179,7 +185,9 @@ int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[])
 
 	return i;
 }
-
+/**
+ * Função que remove um caractere de uma string
+ */
 void removeCaracter(char* palavra, char caracter, char* palavranova){
 	char p;
 	int i=0, j=0;
@@ -192,21 +200,22 @@ void removeCaracter(char* palavra, char caracter, char* palavranova){
 		i++;
 	}while(p!='\0');
 }
-
+/**
+ * Função SEQUENCIAL que verifica se uma string é palindromo
+ * Recebe a string a ser verificada
+ * Retorna -1 caso a string não seja palindromo, e a soma dos números ASCII de seus caracteres caso seja palindromo
+ */
 int verificaPalindromo(char* palavra){
 	int tam, i, limite, ascii, somaascii=0;
 	
 	tam=strlen(palavra);
 	limite=floor((double) (tam)/ (double) 2);
-	
-	//printf("%d => %s\n", tam, palavra);
-	
+
 	for(i=0; i<limite;i++){
 		ascii=palavra[i];
 		somaascii+=ascii;
 		ascii=palavra[tam-1-i];
 		somaascii+=ascii;
-		//printf("%c %c %d - %d %d\n",palavra[i],palavra[tam-1-i], ascii, i, (tam-1-i));
 		if(palavra[i]!=palavra[tam-1-i]){ 
 			if((abs(palavra[i]-palavra[tam-1-i])!=32) || palavra[i]<65 || palavra[tam-1-i]<65) return -1;
 		}
@@ -217,6 +226,12 @@ int verificaPalindromo(char* palavra){
 	}
 	return somaascii;
 }
+/**
+ * Função PARALELIZADA que verifica se uma string é palindromo
+ * Recebe a string a ser verificada
+ * Retorna -1 caso a string não seja palindromo, e a soma dos números ASCII de seus caracteres caso seja palindromo
+ * Executa a verificação de cada caractere da string em paralelo
+ */
 int verificaPalindromoPar(char* palavra){
 	int tam, i, limite, ascii, somaascii=0, ret=1;
 	
@@ -241,8 +256,8 @@ int verificaPalindromoPar(char* palavra){
 }
 
 
-/*
- * Função para checagem, não será usada no programa final
+/**
+ * Função para checagem no desenvolvimento, não é utilizada na versão final do programa
  */
 int somaAscii(char* palavra){
 	int tam, i, ascii, somaascii=0;
@@ -254,12 +269,15 @@ int somaAscii(char* palavra){
 	}
 	return somaascii;
 }
-
+/**
+ * Função que imprime os Palindromos considerando a frase (remove os espaços da frase para transforma-la em uma palavra
+ * Recebe a string da partição a ser analisada, os separadores da string e a lista de primos
+ */
 void imprimePalindromosFrase(char *str, char separador[], primos *list)
 {
 	char *palin_candidate, *sem_espaco;
 	int ascii_palindromo=0;
-	/* VERIFICAÇÃO DE PALÍNDROMOS NAS PALAVRAS*/
+	
 	palin_candidate = strtok((char *) str,separador);
 	
 	while(palin_candidate != NULL)
@@ -271,10 +289,6 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 		{
 			ascii_palindromo = verificaPalindromo(sem_espaco);
 
-			/*
-			printf("SEM ESPACO: %s\n",sem_espaco);
-			fflush(stdout);
-			*/
 			 
 			if(ascii_palindromo > 0)
 			{
@@ -295,7 +309,10 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 	}
 
 }
-
+/**
+ * Função que imprime os Palindromos considerando as palavras (divide a string pelos espaços e verifica palindromo para cada token)
+ * Recebe a string da partição a ser analisada, os separadores da string e a lista de primos
+ */
 void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 {
 	char *palin_candidate, *str_palavra; 	
@@ -314,9 +331,6 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 		{
 			ascii_palindromo = verificaPalindromo(palin_candidate);
 
-			/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
-			fflush(stdout);
-			*/
 			 
 			if(ascii_palindromo > 0)
 			{
@@ -339,11 +353,6 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 	separador[8] = '\0';
 }
 
-/**
- * Regras para separadores:
- * argc = 0 -> separadores: separadores (ARQUIVO PEQUENO)
- * argc = 1 -> separadores: separadores + "espaço" (ARQUIVO GRANDE)
- */
 int main(int argc, char **argv)
 {
 	FILE *arq=NULL;
@@ -353,7 +362,7 @@ int main(int argc, char **argv)
 	int byte_inicio=0, byte_fim=0;
 	int id=0, p=0;
 
-	//int flag_arquivo=ARQUIVO_PEQUENO;
+	//int flag_arquivo=ARQUIVO_PEQUENO; comentado por este arquivo processar o arquivo grande
 	//char nome[20] = "shakespe.txt";
 
 	int flag_arquivo=ARQUIVO_GRANDE;
@@ -391,19 +400,15 @@ int main(int argc, char **argv)
 	}
 	separador[9]='\0';
 
-
+	/*Inicia os processos MPI*/
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
-	//particao_texto =  (char **) malloc (p* sizeof(char *));
 
 	particao_texto = (char *) malloc (p*sizeof(char *));
 	
-	/*
-	printf("Arquivo: %s\n",argv[2]);
-	printf("Tipo arquivo = %d\n",atoi(argv[1]));
-	*/
+	
 
 	arq = fopen(nome,"r+"); /*Abre o arquivo*/
 	if (arq == NULL) /*Verifica se o arquivo existe*/
@@ -429,18 +434,11 @@ int main(int argc, char **argv)
 		byte_fim = (int)(tamanho_bytes*((float)(id+1)/(float)p));
 		byte_fim = buscarUltimoNaoSeparador(arq,byte_fim, separador);
 
-		/*Impressão para checagem*/
-		/*
-		printf("%d\n",(int)(tamanho_bytes*((float)i/(float)p)));
-		printf("Byte inicial=%d, byte final=%d\n",byte_inicio,byte_fim);
-		*/
-
 		/*Transfere a partição para uma string*/
 		montarParticao(arq,&particao_texto,byte_inicio,byte_fim);
 		
 		particao_tamanho = byte_fim-byte_inicio; /*Calcula o tamanho da partição para economizar em chamadas ao strlen()*/
 		
-		//omp_set_num_threads(fator_thread*omp_get_num_procs()); /*Caso queira aumentar nro de threads*/
 		fator_thread = omp_get_num_procs();
 		
 		#pragma omp for private(part_offset_inic,part_offset_fim,str_subpart)  
@@ -452,8 +450,6 @@ int main(int argc, char **argv)
 			part_offset_fim = (int)(particao_tamanho*( (float)(j+1)/ (float)omp_get_num_procs()));
 			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto,part_offset_fim,separador);
 			
-			/*printf("Byte inicial=%ld, byte final=%ld\n",part_offset_inic,part_offset_fim);*/
-
 			/*Aloca a substring em uma nova string*/	
 			str_subpart = (char *) malloc((part_offset_fim-part_offset_inic+1)*sizeof(char));
 			strncpy(str_subpart,&(particao_texto[part_offset_inic]), part_offset_fim-part_offset_inic);
@@ -477,15 +473,6 @@ int main(int argc, char **argv)
 	free(list->prime_list);
 	free(list);
 	
-	/*Faz arquivos para teste*/
-	/*for(i=0; i<p; i++)
-	{
-		sprintf(name,"teste_%d",i);
-		particao_teste[i] = fopen(name,"w+");
-		fseek(particao_teste[i],0,SEEK_SET);
-		fputs(particao_texto[i],particao_teste[i]);
-		fclose(particao_teste[i]);
-	}*/
 	
 	if (!fclose(arq)) /*Tenta fechar o ponteiro do arquivo*/ 
 		return EXIT_FAILURE;
