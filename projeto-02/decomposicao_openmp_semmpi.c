@@ -17,10 +17,10 @@
  */
 int isSeparador(char c, char separador[])
 {
-	if (strchr(separador,c) == NULL || c == EOF)
-		return 0;
-	else
+	if (strchr(separador,c) != NULL || c == EOF)
 		return 1;
+	else
+		return 0;
 }
 
 /**
@@ -48,53 +48,29 @@ void montarParticao(FILE *arq, char **particao, int byte_inicio, int byte_fim)
 int buscarUltimoNaoSeparador(FILE *arq, int offset, char separador[])
 {
 	char c = 0;
-	long int i=0
 
 	fseek(arq,offset,SEEK_SET);
 
-	c = fgetc(arq);
-
-	if(isSeparador(c,separador)) /*Vai para esquerda*/
+	do
 	{
-		for(i=offset; isSeparador(c,separador); i--)
-		{
-			fseek(arq,i,SEEK_SET);
-			c = fgetc(arq);
-		}
-		i = ftell(arq)+1;
+		c = fgetc(arq);
 	}
-	else /*vai para direita*/
-	{
-		do
-		{
-			c = fgetc(arq);
-		}
-		while(isSeparador(c,separador));
-		i = ftell(arq);
-	}
+	while(!isSeparador(c,separador));
 	
 	if (c == EOF)
-		return i;
+		return ftell(arq);
 	else
-		return i-1;
+		return ftell(arq)-1;
 }
 
 /**
  * Função semelhante a de cima, porém busca o não separador em uma string
  */
-int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[], char direcao)
+int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[])
 {
 	long int i=0;
 
-	if(isSeparador(c,separador)) /*Vai para a esquerda*/
-	{
-		for(i=offset; isSeparador(str[i],separador); i--);
-		i ++;
-	}
-	else
-	{
-		for(i=indice, !isSeparador(str[i]) && !str[i]!='\0'; i++);
-	}
+		for(i=indice; !isSeparador(str[i],separador) || !str[i]!='\0'; i++);
 
 	if(str[i] == '\0')
 		return i;
@@ -165,13 +141,13 @@ int main(int argc, char **argv)
 	FILE *arq=NULL;
 	long int tamanho_bytes=0;
 	char *particao_texto[NUM_PROCESSORS], separador[4];
-	register int i=0,j=0;
+	register int i=0,j=0, k=0;
 	int byte_inicio=0, byte_fim=0;
 
 	/*Variáveis partição*/
 	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
 	short int fator_thread=1; /*Quantos threads serão criadas para verificar as partições (será multiplicado pelo número máximo de threads)*/
-	char palindromo[1024];
+	char *palin_candidate, *str_subpart, *str_aux;
 
 	/*Definição dos separadores*/
 	separador[0]='\n';
@@ -182,8 +158,10 @@ int main(int argc, char **argv)
 	}
 	separador[3]='\0';
 	
+	/*
 	printf("Arquivo: %s\n",argv[2]);
 	printf("Tipo arquivo = %d\n",atoi(argv[1]));
+	*/
 
 	arq = fopen(argv[2],"r+"); /*Abre o arquivo*/
 	if (arq == NULL) /*Verifica se o arquivo existe*/
@@ -222,26 +200,49 @@ int main(int argc, char **argv)
 		
 		particao_tamanho = byte_fim-byte_inicio; /*Calcula o tamanho da partição para economizar em chamadas ao strlen()*/
 		
-		#pragma openmp parallel for private(part_offset_inic, part_offset_fim)
-		for(j=0; j<fator_thread*omp_get_num_proc; j++)
+		//omp_set_num_threads(fator_thread*omp_get_num_procs()); /*Caso queira aumentar nro de threads*/
+		fator_thread = omp_get_num_procs();
+
+		//#pragma omp parallel for private(part_offset_inic) private(part_offset_fim)
+		for(j=0; j<fator_thread; j++)
 		{
-			part_offset_inic = (int)(particao_tamanho*((float)j/(float)omp_get_num_proc()));
-			part_offset_inic =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_inic,separador);
+			part_offset_inic = (int)(particao_tamanho*( (float)j/ (float)omp_get_num_procs()));
+			//part_offset_inic =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_inic,separador);
 
-			part_offset_fim = (int)(particao_tamanho*((float)j/(float)omp_get_num_proc()));
-			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_fim,separador);
+			part_offset_fim = (int)(particao_tamanho*( (float)(j+1)/ (float)omp_get_num_procs()));
+			//part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_fim,separador);
+			
+			printf("Byte inicial=%ld, byte final=%ld, tamanho=%ld, endereco=%ld\n",part_offset_inic,part_offset_fim,part_offset_fim-part_offset_inic,&(particao_texto[i][part_offset_inic]));
+			/*fflush(stdout);*/
+			
+			/*if(j != fator_thread-1)
+				particao_texto[i][part_offset_fim-1] = '\0'; Seta como \0 o ultimo caractere da subparticao para que o strtok() pare (sobrescreve um separador)*/
+			//str_subpart = (char *) malloc((part_offset_fim-part_offset_inic)*sizeof(char));
+			//fread(str_subpart,sizeof(char),part_offset_fim-part_offset_inic,particao_texto[i]);
+			
+			/*str_aux = particao_texto[i];*/
 
-			particao_texto[i][part_set_fim+1] = '\0'; /*Seta como \0 o ultimo caractere da subparticao para que o strtok() pare (sobrescreve um separador)*/
+			str_subpart = (char *) malloc((part_offset_fim-part_offset_inic+1)*sizeof(char));
+			memcpy(str_subpart,&(particao_texto[i][part_offset_inic]), part_offset_fim-part_offset_inic);
+			str_subpart[part_offset_fim-part_offset_inic] = '\0';
+			
 
-			/* VERIFICAÇÃO DE PALÍNDROMOS */
-			palin_candidate = strtok(particao_texto[i][part_offset_inic],separadores);
+			/*for(k=0; k<particao_tamanho; k++)
+				printf("%c",(char)(particao_texto[i][k]));*/
+				if(j<=1)
+			printf("PONTO\n%s\n",str_subpart);
+
+			/* VERIFICAÇÃO DE PALÍNDROMOS - TODO: conferir*/
+			palin_candidate = strtok((char *) particao_texto[i],separador);
 
 			while(palin_candidate != NULL)
 			{
-				verificaPalindromo(palin_candidate);
+				//printf("%d %s\n",verificaPalindromo(palin_candidate),palin_candidate);
+				//fflush(stdout);
 				palin_candidate = strtok(NULL,separador);
 			}
 		}
+
 	}
 	
 	if (!fclose(arq)) /*Tenta fechar o ponteiro do arquivo*/ 
