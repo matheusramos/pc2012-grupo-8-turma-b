@@ -6,6 +6,8 @@
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
 #define MAXLENGTH 200
+#define ARQUIVO_PEQUENO 0
+#define ARQUIVO_GRANDE 1
 
 /*
  *
@@ -23,7 +25,7 @@ typedef struct
 
 void realoca (primos **p, int novo_tamanho)
 {
-	int i,*realocado;
+	int *realocado;
 	realocado = realloc ((*p)->prime_list, novo_tamanho * sizeof(int));
 	(*p)->prime_list = realocado;
 	
@@ -43,7 +45,7 @@ int crivo(primos *list, int valor)
 		vetor = malloc(tamanho*sizeof(int));
 	
 		//preenche o vetor
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for(i=0;i<tamanho;i++)
 				vetor[i]=(list->last_prime)+i+1;
 	
@@ -52,7 +54,7 @@ int crivo(primos *list, int valor)
 		{
 			prime = list->prime_list[i];
 			
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(j=0;j<tamanho;++j)
 			{
 				//se eh multiplo
@@ -85,13 +87,12 @@ int crivo(primos *list, int valor)
 				}	
 			
 			}
-		}
-		free(vetor);
+		}	
 		
 	}	
 	
 	//depois que montou a tabela verifica se o valor esta na tabela
-	int inf=0,pos,meio;
+	int inf=0,pos=0;
 	pos  = list->last_index;
 	while(inf<=pos)
 	{
@@ -148,8 +149,11 @@ int buscarUltimoNaoSeparador(FILE *arq, int offset, char separador[])
 {
 	char c = 0;
 
-	fseek(arq,offset,SEEK_SET);
+	if(offset ==0)
+		return 0;
 
+	fseek(arq,offset,SEEK_SET);
+	
 	do
 	{
 		c = fgetc(arq);
@@ -171,6 +175,7 @@ int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[])
 	
 	if (indice == 0)
 		return 0;
+
 	for(i=indice; !isSeparador(str[i],separador) || !str[i]!='\0'; i++);
 
 	return i;
@@ -227,20 +232,63 @@ int somaAscii(char* palavra){
 	return somaascii;
 }
 
+void imprimePalindromos(char *str, char separador[], primos *list, int flag_arquivo)
+{
+	char *palin_candidate;
+	char str_aux[1024];
+	str_aux[0] = '\0';
+	int ascii_palindromo=0;
+	
+	/* VERIFICAÇÃO DE PALÍNDROMOS NAS PALAVRAS*/
+	palin_candidate = strtok((char *) str,separador);
+	
+	while(palin_candidate != NULL)
+	{
+		ascii_palindromo = verificaPalindromo(palin_candidate);
 
+		if(flag_arquivo == ARQUIVO_PEQUENO)
+			strcat(str_aux,palin_candidate);
+
+		printf("Palindromo candidato: %s\n",palin_candidate);
+		fflush(stdout);
+		 
+		if(ascii_palindromo > 0)
+		{
+			if(crivo(list,ascii_palindromo))
+				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(palin_candidate));
+			else
+				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(palin_candidate));
+			fflush(stdout);
+		}
+		palin_candidate = strtok(NULL,separador);
+	}
+
+	/*VERIFICACAO DE PALINDROMOS NAS FRASES*/
+	if(flag_arquivo == ARQUIVO_PEQUENO)
+	{
+		if(ascii_palindromo > 0)
+		{
+			if(crivo(list,ascii_palindromo))
+				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(str_aux));
+			else
+				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(str_aux));
+			fflush(stdout);
+		}
+	}
+}
 
 /**
  * Regras para separadores:
- * argc = 0 -> separadores: espaço, \n\r (ARQUIVO PEQUENO)
- * argc = 1 -> separadores: \n\r (ARQUIVO GRANDE)
+ * argc = 0 -> separadores: separadores (ARQUIVO PEQUENO)
+ * argc = 1 -> separadores: separadores + "espaço" (ARQUIVO GRANDE)
  */
 int main(int argc, char **argv)
 {
 	FILE *arq=NULL;
 	long int tamanho_bytes=0;
-	char *particao_texto[NUM_PROCESSORS], separador[4];
+	char *particao_texto[NUM_PROCESSORS], separador[9];
 	register int i=0,j=0;
-	int byte_inicio=0, byte_fim=0;
+	int byte_inicio=0, byte_fim=0, flag_arquivo=atoi(argv[2]);
 	char name[10];
 	FILE *particao_teste[NUM_PROCESSORS];
 
@@ -248,26 +296,32 @@ int main(int argc, char **argv)
 	/*Variáveis partição*/
 	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
 	short int fator_thread=1; /*Quantos threads serão criadas para verificar as partições (será multiplicado pelo número máximo de threads)*/
-	int ascii_palindromo=0;
-	char *palin_candidate, *str_subpart;
+	char *str_subpart;
 
 	primos *list;
-	list = malloc(sizeof(primos));
+	list = (primos *) malloc(sizeof(primos));
 
 	list->last_index=0;
 	list->last_prime = 2;
 	list->max_len = MAXLENGTH;
-	list->prime_list = malloc ((MAXLENGTH)*sizeof(int));
+	list->prime_list = (int *) malloc ((MAXLENGTH)*sizeof(int));
 	list->prime_list[0]=2;
 
 	/*Definição dos separadores*/
 	separador[0]='\n';
 	separador[1]='\r';
-	if (atoi(argv[1]) == 0)
+	separador[2]='\t';
+	separador[3]='.';
+	separador[4]=',';
+	separador[5]='!';
+	separador[6]='?';
+	separador[7]='-';
+	separador[8]='\0';
+	if (flag_arquivo == ARQUIVO_GRANDE)
 	{
-		separador[2]=' ';
+		separador[8]=' ';
+		separador[9]='\0';
 	}
-	separador[3]='\0';
 	
 	/*
 	printf("Arquivo: %s\n",argv[2]);
@@ -291,7 +345,6 @@ int main(int argc, char **argv)
 	 * Aqui o arquivo vai ser divido em partes, o critério de divisão é o tamanho do arquivo e a ocorrência
 	 * de um separador para que um palíndromo não seja cortado em dois pedaços.
 	 */
-	int countpalin=0;
 	for(i=0; i<NUM_PROCESSORS; i++)
 	{
 		/*Calcula o byte de início da partição, corre o stream até achar um separador*/
@@ -324,34 +377,25 @@ int main(int argc, char **argv)
 			part_offset_fim = (int)(particao_tamanho*( (float)(j+1)/ (float)omp_get_num_procs()));
 			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto[i],part_offset_fim,separador);
 			
+			/*printf("Byte inicial=%ld, byte final=%ld\n",part_offset_inic,part_offset_fim);*/
+
 			/*Aloca a substring em uma nova string*/	
 			str_subpart = (char *) malloc((part_offset_fim-part_offset_inic+1)*sizeof(char));
-			memcpy(str_subpart,&(particao_texto[i][part_offset_inic]), part_offset_fim-part_offset_inic);
+			strncpy(str_subpart,&(particao_texto[i][part_offset_inic]), part_offset_fim-part_offset_inic);
 			str_subpart[part_offset_fim-part_offset_inic] = '\0';
-			
 
-			/* VERIFICAÇÃO DE PALÍNDROMOS - TODO: conferir*/
-			palin_candidate = strtok((char *) str_subpart,separador);
-			
-			while(palin_candidate != NULL)
-			{
-				ascii_palindromo = verificaPalindromo(palin_candidate);
-				 
-				if(ascii_palindromo > 0)
-				{
-					countpalin++;
-					if(crivo(list,ascii_palindromo))
-						printf("-----------\nPalindromo [%d]: %s \nSoma ASCII: %d   É primo\n",countpalin,palin_candidate,verificaPalindromo(palin_candidate));
-					else
-					printf("-----------\nPalindromo [%d]: %s \nSoma ASCII: %d   Nao primo\n",countpalin,palin_candidate,verificaPalindromo(palin_candidate));
-					fflush(stdout);
 
-				}
-				palin_candidate = strtok(NULL,separador);
-			}
-			//free(str_subpart);
+
+			
+			/*Calcula palindromos e primos*/
+			if(flag_arquivo == ARQUIVO_PEQUENO)
+				imprimePalindromos(str_subpart, separador, list, ARQUIVO_PEQUENO);
+			else
+				imprimePalindromos(str_subpart, separador, list, ARQUIVO_GRANDE);
+			
+			free(str_subpart); //libera a memória da subparticao
 		}
-		free(particao_texto[i]);
+		free(particao_texto[i]); //libera a memória da partição
 	}
 	
 	/*Faz arquivos para teste*/
@@ -362,8 +406,8 @@ int main(int argc, char **argv)
 		fseek(particao_teste[i],0,SEEK_SET);
 		fputs(particao_texto[i],particao_teste[i]);
 		fclose(particao_teste[i]);
-	}
-	*/
+	}*/
+	
 	if (!fclose(arq)) /*Tenta fechar o ponteiro do arquivo*/ 
 		return EXIT_FAILURE;
 
