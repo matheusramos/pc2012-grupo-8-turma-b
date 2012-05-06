@@ -255,9 +255,9 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
                         if(ascii_palindromo > 0)
                         {
                                 if(crivo(list,ascii_palindromo))
-                                        printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",sem_espaco,ascii_palindromo);
+                                        printf("Frase palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",sem_espaco,ascii_palindromo);
                                 else
-                                        printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",sem_espaco,ascii_palindromo);
+                                        printf("Frase palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",sem_espaco,ascii_palindromo);
                                 fflush(stdout);
                         }
                 }
@@ -293,9 +293,9 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
                         if(ascii_palindromo > 0)
                         {
                                 if(crivo(list,ascii_palindromo))
-                                        printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,ascii_palindromo);
+                                        printf("Palavra palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,ascii_palindromo);
                                 else
-                                        printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,ascii_palindromo);
+                                        printf("Palavra palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,ascii_palindromo);
                                 fflush(stdout);
                         }
                 }
