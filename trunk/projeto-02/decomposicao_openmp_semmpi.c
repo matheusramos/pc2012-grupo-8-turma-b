@@ -255,9 +255,13 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 			if(ascii_palindromo > 0)
 			{
 				if(crivo(list,ascii_palindromo))
-					printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",sem_espaco,ascii_palindromo);
+				{
+					printf("Frase palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",sem_espaco,ascii_palindromo);
+				}
 				else
-					printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",sem_espaco,ascii_palindromo);
+				{
+					printf("Frase palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",sem_espaco,ascii_palindromo);
+				}
 				fflush(stdout);
 			}
 		}
@@ -293,9 +297,13 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 			if(ascii_palindromo > 0)
 			{
 				if(crivo(list,ascii_palindromo))
-					printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,ascii_palindromo);
+				{
+					printf("Palavra palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,ascii_palindromo);
+				}
 				else
-					printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,ascii_palindromo);
+				{
+					printf("Palavra palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,ascii_palindromo);
+				}
 				fflush(stdout);
 			}
 		}
@@ -408,7 +416,7 @@ int main(int argc, char **argv)
 		//omp_set_num_threads(fator_thread*omp_get_num_procs()); /*Caso queira aumentar nro de threads*/
 		fator_thread = omp_get_num_procs();
 		
-		//#pragma omp parallel for private(part_offset_inic) private(part_offset_fim)
+		#pragma omp parallel for private(part_offset_inic,part_offset_fim,str_subpart)
 		for(j=0; j<fator_thread; j++)
 		{
 			part_offset_inic = (int)(particao_tamanho*( (float)j/ (float)omp_get_num_procs()));
@@ -438,7 +446,7 @@ int main(int argc, char **argv)
 		free(particao_texto[id]); //libera a memória da partição
 
 	MPI_Finalize();
-
+	
 	free(list->prime_list);
 	free(list);
 	
