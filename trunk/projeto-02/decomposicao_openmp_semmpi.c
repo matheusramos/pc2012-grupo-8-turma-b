@@ -175,7 +175,7 @@ int buscarUltimoNaoSeparadorString(char *str, int indice, char separador[])
 	if (indice == 0)
 		return 0;
 
-	for(i=indice; !isSeparador(str[i],separador) || !str[i]!='\0'; i++);
+	for(i=indice; !isSeparador(str[i],separador) || str[i]!='\0'; i++);
 
 	return i;
 }
