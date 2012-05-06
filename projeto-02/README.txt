@@ -18,6 +18,7 @@ Para executar os arquivos "pequenos" é necessário possuir o arquivo "shakespe.
 Para executar os arquivos "grandes" é necessário possuir o arquivo "wikipedia.txt" no mesmo diretório.
 Ambos arquivos "shakespe.txt" e "wikipedia.txt" foram disponibilizados no Moodle Lasdpc (http://moodle.lasdpc.icmc.usp.br).
 
-Para compilar os arquivos é necessário possuir o compilador gcc 4.2 ou superior e as bibliotecas "OpenMP" e "MPI".
+Para compilar os arquivos é necessário possuir o compilador gcc 4.2 e as bibliotecas "OpenMP" e "MPI".
 
 As saídas de todos os programas são apresentadas em tela.
+Não serão imprimidas na tela as palavras palíndromas com menos de 2 letras
