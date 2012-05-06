@@ -5,12 +5,110 @@
 #include<omp.h>
 
 #define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
+#define MAXLENGTH 200
 
 /*
  *
  * TODO Testar as bordas das partições.
  *
  */
+
+typedef struct
+{
+	int last_index;
+	int last_prime;
+	int max_len;
+	int *prime_list;
+}primos;
+
+void realoca (primos **p, int novo_tamanho)
+{
+	int i,*realocado;
+	realocado = realloc ((*p)->prime_list, novo_tamanho * sizeof(int));
+	(*p)->prime_list = realocado;
+	
+}
+
+int crivo(primos *list, int valor)
+{ 
+
+	int i,j;
+	int *vetor,prime;
+
+	//temos que calcular mais primos
+	if(valor > (list->last_prime))
+	{
+		int tamanho = valor - (list->last_prime);
+
+		vetor = malloc(tamanho*sizeof(int));
+	
+		//preenche o vetor
+		//#pragma omp parallel for
+		for(i=0;i<tamanho;i++)
+				vetor[i]=(list->last_prime)+i+1;
+	
+				
+		for(i=0;i<=(list->last_index);++i)
+		{
+			prime = list->prime_list[i];
+			
+			//#pragma omp parallel for
+			for(j=0;j<tamanho;++j)
+			{
+				//se eh multiplo
+				if(vetor[j]%prime==0)
+					vetor[j]=-1;
+					
+			}
+			//jah percorreu toda a lista inicial de primos, eh hora de add mais algum primo
+			if(i==(list->last_index))
+			{
+				int posicao=0;
+				while(posicao <tamanho && vetor[posicao]==-1)
+					++posicao;
+				//achou um valor nao marcado
+				if(posicao<tamanho)
+				{
+					(list->last_index)++;
+					list->prime_list[list->last_index] = vetor[posicao];
+					list->last_prime = vetor[posicao];				
+					vetor[posicao]=-1;
+
+					//caso o vetor esteja no limite, ele eh realocado
+					if(list->last_index == (list->max_len)-1)
+					{
+						int novo_tamanho = (list->max_len)*2;
+						realoca(&list,novo_tamanho);
+						list->max_len = novo_tamanho;
+	
+					}
+				}	
+			
+			}
+		}	
+		
+	}	
+	
+	//depois que montou a tabela verifica se o valor esta na tabela
+	int inf=0,pos,meio;
+	pos  = list->last_index;
+	while(inf<=pos)
+	{
+		int meio=(inf+pos)/2;
+		if(list->prime_list[meio]==valor)
+		{
+			return 1;
+		}
+		else if (list->prime_list[meio]<valor)
+			inf = meio+1;
+		else
+			pos = meio-1;
+	}
+
+	return 0;
+}
+
+
 
 /**
  * Verifica o caractere c é um separador ou EOF.
@@ -145,11 +243,21 @@ int main(int argc, char **argv)
 	char name[10];
 	FILE *particao_teste[NUM_PROCESSORS];
 
+
 	/*Variáveis partição*/
 	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
 	short int fator_thread=1; /*Quantos threads serão criadas para verificar as partições (será multiplicado pelo número máximo de threads)*/
 	int ascii_palindromo=0;
 	char *palin_candidate, *str_subpart;
+
+	primos *list;
+	list = malloc(sizeof(primos));
+
+	list->last_index=0;
+	list->last_prime = 2;
+	list->max_len = MAXLENGTH;
+	list->prime_list = malloc ((MAXLENGTH)*sizeof(int));
+	list->prime_list[0]=2;
 
 	/*Definição dos separadores*/
 	separador[0]='\n';
@@ -182,6 +290,7 @@ int main(int argc, char **argv)
 	 * Aqui o arquivo vai ser divido em partes, o critério de divisão é o tamanho do arquivo e a ocorrência
 	 * de um separador para que um palíndromo não seja cortado em dois pedaços.
 	 */
+	int countpalin=0;
 	for(i=0; i<NUM_PROCESSORS; i++)
 	{
 		/*Calcula o byte de início da partição, corre o stream até achar um separador*/
@@ -204,7 +313,7 @@ int main(int argc, char **argv)
 		
 		//omp_set_num_threads(fator_thread*omp_get_num_procs()); /*Caso queira aumentar nro de threads*/
 		fator_thread = omp_get_num_procs();
-
+		
 		//#pragma omp parallel for private(part_offset_inic) private(part_offset_fim)
 		for(j=0; j<fator_thread; j++)
 		{
@@ -222,12 +331,21 @@ int main(int argc, char **argv)
 
 			/* VERIFICAÇÃO DE PALÍNDROMOS - TODO: conferir*/
 			palin_candidate = strtok((char *) str_subpart,separador);
-
+			
 			while(palin_candidate != NULL)
 			{
-				ascii_palindromo = verificaPalindromo(palin_candidate); 
-				if(ascii_palindromo > 100)
-					printf("%d %s\n",verificaPalindromo(palin_candidate),palin_candidate);
+				ascii_palindromo = verificaPalindromo(palin_candidate);
+				 
+				if(ascii_palindromo > 0)
+				{
+					countpalin++;
+					if(crivo(list,ascii_palindromo))
+						printf("-----------\nPalindromo [%d]: %s \nSoma ASCII: %d   É primo\n",countpalin,palin_candidate,verificaPalindromo(palin_candidate));
+					else
+					printf("-----------\nPalindromo [%d]: %s \nSoma ASCII: %d   Nao primo\n",countpalin,palin_candidate,verificaPalindromo(palin_candidate));
+					fflush(stdout);
+
+				}
 				palin_candidate = strtok(NULL,separador);
 			}
 		}

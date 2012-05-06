@@ -35,7 +35,7 @@ int crivo(primos *list, int valor)
 		vetor = malloc(tamanho*sizeof(int));
 	
 		//preenche o vetor
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for(i=0;i<tamanho;i++)
 				vetor[i]=(list->last_prime)+i+1;
 	
@@ -44,7 +44,7 @@ int crivo(primos *list, int valor)
 		{
 			prime = list->prime_list[i];
 			
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(j=0;j<tamanho;++j)
 			{
 				//se eh multiplo
