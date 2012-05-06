@@ -223,7 +223,6 @@ int verificaPalindromoPar(char* palavra){
 	tam=strlen(palavra);
 	limite=floor((double) (tam)/ (double) 2);
 	
-	omp_set_num_threads(4);
 	#pragma omp parallel for reduction (+:somaascii) reduction(&&:ret)
 	for(i=0; i<limite;i++){
 		somaascii+=palavra[i]+palavra[tam-1-i];
