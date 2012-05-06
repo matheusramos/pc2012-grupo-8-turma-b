@@ -357,7 +357,7 @@ int main(int argc, char **argv)
 	char nome[20] = "shakespe.txt";
 */
 	int flag_arquivo=ARQUIVO_GRANDE;
-	char nome = "wikipedia.txt";
+	char nome[20] = "wikipedia.txt";
 	
 
 	/*Variáveis partição*/
