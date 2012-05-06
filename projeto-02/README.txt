@@ -13,7 +13,7 @@ sequencial_grande.c 	executa_seq_grd.sh
 hibrida_pequeno.c 		executa_hib_peq.sh
 hibrida_grande.c 			executa_hib_grd.sh
 paralelo_pequeno.c 		executa_par_peq.sh
-paralelo_grande.c 		executa_par_peq.sh
+paralelo_grande.c 		executa_par_grd.sh
 
 Para executar o .sh basta inserir no terminal linux "./nome_do_arquivo.sh"
 Para executar os arquivos "pequenos" é necessário possuir o arquivo "shakespe.txt" no mesmo diretório.
