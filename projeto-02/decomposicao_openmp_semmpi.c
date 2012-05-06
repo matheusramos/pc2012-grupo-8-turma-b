@@ -11,7 +11,6 @@
 
 /*
  *
- * TODO Testar as bordas das partições.
  *
  */
 
@@ -252,7 +251,7 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 		printf("Palindromo candidato: %s\n",palin_candidate);
 		fflush(stdout);
 		 
-		if(ascii_palindromo > 0)
+	/*	if(ascii_palindromo > 0)
 		{
 			if(crivo(list,ascii_palindromo))
 				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(palin_candidate));
@@ -260,10 +259,11 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(palin_candidate));
 			fflush(stdout);
 		}
+	*/
 		palin_candidate = strtok(NULL,separador);
 	}
-
 	/*VERIFICACAO DE PALINDROMOS NAS FRASES*/
+	/*
 	if(flag_arquivo == ARQUIVO_PEQUENO)
 	{
 		if(ascii_palindromo > 0)
@@ -275,6 +275,7 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 			fflush(stdout);
 		}
 	}
+	*/
 }
 
 /**
