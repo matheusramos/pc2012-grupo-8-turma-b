@@ -3,8 +3,6 @@
 #include<string.h>
 #include<mpi.h>
 
-#define NUM_PROCESSORS 8 /*somente para a versão sequencial, simula o nro de processadores*/
-
 /**
  * Verifica o caractere c é um separador ou EOF.
  */
