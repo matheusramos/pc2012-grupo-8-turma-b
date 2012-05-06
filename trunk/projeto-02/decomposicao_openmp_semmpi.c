@@ -234,7 +234,8 @@ int somaAscii(char* palavra){
 void imprimePalindromos(char *str, char separador[], primos *list, int flag_arquivo)
 {
 	char *palin_candidate;
-	char str_aux[1024];
+	char *str_aux=NULL;
+	char str_frase[1024];
 	str_aux[0] = '\0';
 	int ascii_palindromo=0;
 	
@@ -243,15 +244,32 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 	
 	while(palin_candidate != NULL)
 	{
-		ascii_palindromo = verificaPalindromo(palin_candidate);
-
+		
+		/*Vai dividir a frase em palavras chamar a funcao e concatenar a frase sem espaços*/
 		if(flag_arquivo == ARQUIVO_PEQUENO)
-			strcat(str_aux,palin_candidate);
+		{
+			str_aux = strtok(palin_candidate," ");
+			while(str_aux != NULL)
+			{
+				printf("PALINDROMO PALAVRA DENTRO DA FRASE: %s\n",str_aux);
+				fflush(stdout);
+				ascii_palindromo = verificaPalindromo(palin_candidate);
+				strcat(str_frase,str_aux);
+				str_aux = strtok(NULL," ");
+			}
+			printf("PALINDROMO FRASE: %s\n",str_frase);
+			fflush(stdout);
+		}
+		else
+		{
+			ascii_palindromo = verificaPalindromo(palin_candidate);
+		}
 
-		printf("Palindromo candidato: %s\n",palin_candidate);
+		/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
 		fflush(stdout);
+		*/
 		 
-	/*	if(ascii_palindromo > 0)
+	if(ascii_palindromo > 0)
 		{
 			if(crivo(list,ascii_palindromo))
 				printf("Palindromo:%s\t\tSoma ASCII: %d\tÉ primo\n",palin_candidate,verificaPalindromo(palin_candidate));
@@ -259,11 +277,11 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 				printf("Palindromo:%s\t\tSoma ASCII: %d\tNao primo\n",palin_candidate,verificaPalindromo(palin_candidate));
 			fflush(stdout);
 		}
-	*/
+	
 		palin_candidate = strtok(NULL,separador);
 	}
 	/*VERIFICACAO DE PALINDROMOS NAS FRASES*/
-	/*
+	
 	if(flag_arquivo == ARQUIVO_PEQUENO)
 	{
 		if(ascii_palindromo > 0)
@@ -275,7 +293,7 @@ void imprimePalindromos(char *str, char separador[], primos *list, int flag_arqu
 			fflush(stdout);
 		}
 	}
-	*/
+	
 }
 
 /**
@@ -287,12 +305,11 @@ int main(int argc, char **argv)
 {
 	FILE *arq=NULL;
 	long int tamanho_bytes=0;
-	char *particao_texto[NUM_PROCESSORS], separador[9];
+	char *particao_texto[NUM_PROCESSORS], separador[12];
 	register int i=0,j=0;
-	int byte_inicio=0, byte_fim=0, flag_arquivo=atoi(argv[2]);
+	int byte_inicio=0, byte_fim=0, flag_arquivo=atoi(argv[1]);
 	char name[10];
 	FILE *particao_teste[NUM_PROCESSORS];
-
 
 	/*Variáveis partição*/
 	long int particao_tamanho=0, part_offset_inic=0, part_offset_fim=0;
@@ -317,11 +334,14 @@ int main(int argc, char **argv)
 	separador[5]='!';
 	separador[6]='?';
 	separador[7]='-';
-	separador[8]='\0';
+	separador[8]='|';
+	separador[9]='\'';
+	separador[10]='\"';
+	separador[11]='\0';
 	if (flag_arquivo == ARQUIVO_GRANDE)
 	{
-		separador[8]=' ';
-		separador[9]='\0';
+		separador[11]=' ';
+		separador[12]='\0';
 	}
 	
 	/*
