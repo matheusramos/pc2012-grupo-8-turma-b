@@ -269,7 +269,7 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 
 		if(strlen(sem_espaco) >1)
 		{
-			ascii_palindromo = verificaPalindromo(sem_espaco);
+			ascii_palindromo = verificaPalindromoPar(sem_espaco);
 
 			/*
 			printf("SEM ESPACO: %s\n",sem_espaco);
@@ -312,7 +312,7 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 	{
 		if(strlen(palin_candidate)>1)
 		{
-			ascii_palindromo = verificaPalindromo(palin_candidate);
+			ascii_palindromo = verificaPalindromoPar(palin_candidate);
 
 			/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
 			fflush(stdout);
