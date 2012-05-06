@@ -353,11 +353,11 @@ int main(int argc, char **argv)
 	int byte_inicio=0, byte_fim=0;
 	int id=0, p=0;
 
-	//int flag_arquivo=ARQUIVO_PEQUENO;
-	//char nome[20] = "shakespe.txt";
+	int flag_arquivo=ARQUIVO_PEQUENO;
+	char nome[20] = "shakespe.txt";
 
-	int flag_arquivo=ARQUIVO_GRANDE;
-	char nome[20] = "wikipedia.txt";
+	//int flag_arquivo=ARQUIVO_GRANDE;
+	//char nome[20] = "wikipedia.txt";
 	
 	
 
