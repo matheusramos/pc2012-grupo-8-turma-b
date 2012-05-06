@@ -217,6 +217,31 @@ int verificaPalindromo(char* palavra){
 	}
 	return somaascii;
 }
+int verificaPalindromoPar(char* palavra){
+	int tam, i, limite, ascii, somaascii=0, ret=1;
+	
+	tam=strlen(palavra);
+	limite=floor((double) (tam)/ (double) 2);
+	
+	omp_set_num_threads(4);
+	#pragma omp parallel for reduction (+:somaascii) reduction(&&:ret)
+	for(i=0; i<limite;i++){
+		somaascii+=palavra[i]+palavra[tam-1-i];
+		if(palavra[i]!=palavra[tam-1-i]){ 
+			if((abs(palavra[i]-palavra[tam-1-i])!=32) || palavra[i]<65 || palavra[tam-1-i]<65) ret=0;
+		}
+	}
+	if(ret==0){
+		return -1;
+	}
+	if(tam%2==1) {
+		ascii=palavra[limite];
+		somaascii+=ascii;
+	}
+	return somaascii;
+}
+
+
 /*
  * Função para checagem, não será usada no programa final
  */
@@ -245,7 +270,7 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 
 		if(strlen(sem_espaco) >1)
 		{
-			ascii_palindromo = verificaPalindromo(sem_espaco);
+			ascii_palindromo = verificaPalindromoPar(sem_espaco);
 
 			/*
 			printf("SEM ESPACO: %s\n",sem_espaco);
@@ -288,7 +313,7 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 	{
 		if(strlen(palin_candidate)>1)
 		{
-			ascii_palindromo = verificaPalindromo(palin_candidate);
+			ascii_palindromo = verificaPalindromoPar(palin_candidate);
 
 			/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
 			fflush(stdout);
@@ -324,7 +349,7 @@ int main(int argc, char **argv)
 {
 	FILE *arq=NULL;
 	long int tamanho_bytes=0;
-	char **particao_texto, separador[12];
+	char *particao_texto, separador[12];
 	register int j=0;
 	int byte_inicio=0, byte_fim=0;
 	int id=0, p=0;
@@ -366,12 +391,14 @@ int main(int argc, char **argv)
 	}
 	separador[9]='\0';
 
+
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
-	particao_texto =  (char **) malloc (p* sizeof(char *));
+	//particao_texto =  (char **) malloc (p* sizeof(char *));
 
+	particao_texto = (char *) malloc (p*sizeof(char *));
 	
 	/*
 	printf("Arquivo: %s\n",argv[2]);
@@ -409,27 +436,27 @@ int main(int argc, char **argv)
 		*/
 
 		/*Transfere a partição para uma string*/
-		montarParticao(arq,&particao_texto[id],byte_inicio,byte_fim);
+		montarParticao(arq,&particao_texto,byte_inicio,byte_fim);
 		
 		particao_tamanho = byte_fim-byte_inicio; /*Calcula o tamanho da partição para economizar em chamadas ao strlen()*/
 		
 		//omp_set_num_threads(fator_thread*omp_get_num_procs()); /*Caso queira aumentar nro de threads*/
 		fator_thread = omp_get_num_procs();
 		
-		#pragma omp parallel for private(part_offset_inic,part_offset_fim,str_subpart)
+		#pragma omp for private(part_offset_inic,part_offset_fim,str_subpart)  
 		for(j=0; j<fator_thread; j++)
 		{
 			part_offset_inic = (int)(particao_tamanho*( (float)j/ (float)omp_get_num_procs()));
-			part_offset_inic =	buscarUltimoNaoSeparadorString(particao_texto[id],part_offset_inic,separador);
+			part_offset_inic =	buscarUltimoNaoSeparadorString(particao_texto,part_offset_inic,separador);
 
 			part_offset_fim = (int)(particao_tamanho*( (float)(j+1)/ (float)omp_get_num_procs()));
-			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto[id],part_offset_fim,separador);
+			part_offset_fim =	buscarUltimoNaoSeparadorString(particao_texto,part_offset_fim,separador);
 			
 			/*printf("Byte inicial=%ld, byte final=%ld\n",part_offset_inic,part_offset_fim);*/
 
 			/*Aloca a substring em uma nova string*/	
 			str_subpart = (char *) malloc((part_offset_fim-part_offset_inic+1)*sizeof(char));
-			strncpy(str_subpart,&(particao_texto[id][part_offset_inic]), part_offset_fim-part_offset_inic);
+			strncpy(str_subpart,&(particao_texto[part_offset_inic]), part_offset_fim-part_offset_inic);
 			str_subpart[part_offset_fim-part_offset_inic] = '\0';
 
 			/*Calcula palindromos e primos*/
@@ -443,7 +470,7 @@ int main(int argc, char **argv)
 			
 			free(str_subpart); //libera a memória da subparticao
 		}
-		free(particao_texto[id]); //libera a memória da partição
+		free(particao_texto); //libera a memória da partição
 
 	MPI_Finalize();
 	
