@@ -269,7 +269,7 @@ void imprimePalindromosFrase(char *str, char separador[], primos *list)
 
 		if(strlen(sem_espaco) >1)
 		{
-			ascii_palindromo = verificaPalindromo(sem_espaco);
+			ascii_palindromo = verificaPalindromoPar(sem_espaco);
 
 			/*
 			printf("SEM ESPACO: %s\n",sem_espaco);
@@ -312,7 +312,7 @@ void imprimePalindromosPalavra(char *str, char separador[], primos *list)
 	{
 		if(strlen(palin_candidate)>1)
 		{
-			ascii_palindromo = verificaPalindromo(palin_candidate);
+			ascii_palindromo = verificaPalindromoPar(palin_candidate);
 
 			/*printf("%dPalindromo candidato: %s\n",flag_arquivo,palin_candidate);
 			fflush(stdout);
@@ -353,12 +353,12 @@ int main(int argc, char **argv)
 	int byte_inicio=0, byte_fim=0;
 	int id=0, p=0;
 
-	int flag_arquivo=ARQUIVO_PEQUENO;
-	char nome[20] = "shakespe.txt";
-/*
+	//int flag_arquivo=ARQUIVO_PEQUENO;
+	//char nome[20] = "shakespe.txt";
+
 	int flag_arquivo=ARQUIVO_GRANDE;
 	char nome[20] = "wikipedia.txt";
-	*/
+	
 	
 
 	/*Variáveis partição*/
