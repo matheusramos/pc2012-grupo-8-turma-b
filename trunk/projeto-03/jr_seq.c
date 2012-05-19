@@ -2,7 +2,7 @@
 #include<stdlib.h>
 
 /**
- * Função que aloca uma matriz M quadrada de ordem tamanho.
+ * Aloca uma matriz M quadrada de doubles de ordem tamanho.
  */
 void alocarMatrizQuadDoub(double ***M, int tamanho)
 {
@@ -14,7 +14,19 @@ void alocarMatrizQuadDoub(double ***M, int tamanho)
 }
 
 /**
- * Funcao que imprime uma matriz M quadrada de doubles de ordem tamanho.
+ * Desaloca matriz quadrada M de doubles de ordem tamanho.
+ */
+void desalocarMatrizQuadDoub(double ***M, int tamanho)
+{
+	register int i=0;
+
+	for(i=0; i<tamanho; i++)
+		free((*M)[i]);
+	free(*M);
+}
+
+/**
+ * Imprime uma matriz M quadrada de doubles de ordem tamanho.
  */
 void imprimirMatrizQuadDoub(double **M, int tamanho)
 {
@@ -51,7 +63,9 @@ int main(int argc, char **argv)
 		for(j=0; j<j_order; j++)
 			scanf("%lf",&MA[i][j]);
 
-	imprimirMatrizQuad(MA,j_order);	
+	imprimirMatrizQuadDoub(MA,j_order);	
+
+	desalocarMatrizQuadDoub(&MA,j_order);
 	
 
 	return EXIT_SUCCESS;
