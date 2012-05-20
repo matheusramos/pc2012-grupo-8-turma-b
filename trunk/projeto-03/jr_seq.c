@@ -183,7 +183,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	register int i=0,j=0;
 
 	xAnt = (double *)malloc(tamanho*sizeof(double));
-	x = (double *)malloc(tamanho*sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
 
 	for(i=0;i<tamanho;++i)
@@ -197,7 +196,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		b[i] = b[i]/diagonal; 	
 		for(j=0;j<tamanho;++j)
 			MA[i][j]=MA[i][j]/diagonal;
-		
 	}
 
 	if(criterioLinhasColunas(MA,tamanho)==0)
@@ -227,11 +225,11 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		++(*n_iteracoes);
 	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<MAXiteracoes);
 
-	printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
+	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
         printf("x%d = %8.5f\n", i+1, x[i]);
     }
-
+	*/
 	return 1;
 }
 
