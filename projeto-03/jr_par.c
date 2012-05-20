@@ -3,7 +3,7 @@
 #include<math.h>
 #include<mpi.h>
 
-int jacobiRichardson(double **,double *,double *,int,double,double,int *, int, char **);
+int jacobiRichardson(double **,double *,double *,int,double,double,int *, int, int);
 
 /**
  * Verifica os critérios de linhas e colunas:
@@ -150,9 +150,10 @@ int main(int argc, char **argv)
 		for(j=0; j<j_order; j++)
 		{
 			fscanf(arquivo,"%lf",&MA[i][j]);
-			if(MA[i][j] == 0)
+			if(id==0 && MA[i][j] == 0)
 			{
 				fprintf(stderr,"Falha: Determinante é zero");
+				MPI_Abort(MPI_COMM_WORLD,-1);
 				return EXIT_FAILURE;
 			}
 		}
@@ -165,9 +166,10 @@ int main(int argc, char **argv)
 		
 
 	/*Chama o método numérico*/
-	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes, argc,argv))
+	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes, id, p))
 	{
 		fprintf(stderr,"Falha: Matriz não atende ao critério de convergência");
+		MPI_Abort(MPI_COMM_WORLD,-1);
 		return EXIT_FAILURE;
 	}
 	
@@ -189,12 +191,13 @@ int main(int argc, char **argv)
  * @return 
  * FALSE se não passar em algum critério de convergência.
  */
-int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int argc, char **argv){
+int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int id,int num_proc){
 
 	double *xAnt;
 	double *erros;
 	double diagonal, result;
 	register int i=0,j=0;
+	MPI_Datatype valorX;
 
 	xAnt = (double *)calloc(tamanho,sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
@@ -208,32 +211,34 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		for(j=0;j<tamanho;++j)
 			MA[i][j]=MA[i][j]/diagonal;
 	}
+	
+	
 
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
-
-	
+	//TODO Criar Struct com o valor x e o indice
+	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
 	//calculo dos resultados
-	do
+	while(*n_iteracoes<MAXiteracoes)
 	{
-		for(i=0;i<tamanho;i++)
+		for(i=id;i<tamanho;i+=p)
 		{
 			result =0;
 		   	for (j=0;j<tamanho;j++)
 			{
-		        if(i!=j)
-		            result = result + ((-1)*MA[i][j]*xAnt[j]);
+		        if(id!=j)
+		            result = result + ((-1)*MA[id][j]*xAnt[j]);
 		    }
-		    x[i]=result + b[i];
-			erros[i]=fabs(x[i]-xAnt[i]);
+		    x[id]=result + b[id];
+			erros[id]=fabs(x[id]-xAnt[id]);
 		}
 		//salva os valores anteriores
 		for(i=0;i<tamanho;i++)
             xAnt[i]=x[i];
 		
 		++(*n_iteracoes);
-	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<MAXiteracoes);
+	}
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
