@@ -125,22 +125,31 @@ int main(int argc, char **argv)
 
 	register int i=0,j=0; //int para iteração
 	int n_iteracoes=0;
-
-	scanf("%d",&j_order);
+	int id=0,p=0;
+	FILE *arquivo;
+	
+	/*Inicia os processos MPI*/
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &id);
+	MPI_Comm_size(MPI_COMM_WORLD, &p);
+	
+	arquivo = fopen("entradas/matriz250.txt","r");
+	
+	fscanf(arquivo,"%d",&j_order);
 
 	alocarMatrizQuadDoub(&MA,j_order); //TODO:Paralelizar alocacao enquanto ocorre o resto da leitura
 	b = (double *) calloc(j_order,sizeof(double)); //TODO: pode ser paralelizado
 	x = (double *) calloc(j_order,sizeof(double));
 	
-	scanf("%d",&j_row_test);
-	scanf("%lf",&j_error);
-	scanf("%d",&j_ite_max);
+	fscanf(arquivo,"%d",&j_row_test);
+	fscanf(arquivo,"%lf",&j_error);
+	fscanf(arquivo,"%d",&j_ite_max);
 	
 	/*Lê a matriz A*/
 	for(i=0; i<j_order; i++)
 		for(j=0; j<j_order; j++)
 		{
-			scanf("%lf",&MA[i][j]);
+			fscanf(arquivo,"%lf",&MA[i][j]);
 			if(MA[i][j] == 0)
 			{
 				fprintf(stderr,"Falha: Determinante é zero");
@@ -150,9 +159,10 @@ int main(int argc, char **argv)
 
 	/*Lê o vetor b*/
 	for(i=0; i<j_order; i++)
-		scanf("%lf",&b[i]);
+		fscanf(arquivo,"%lf",&b[i]);
 
 	//imprimirMatrizQuadDoub(MA,j_order);
+		
 
 	/*Chama o método numérico*/
 	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes, argc,argv))
@@ -162,11 +172,14 @@ int main(int argc, char **argv)
 	}
 	
 	imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
+	printf("ID do processo %d",id);
 
 	/*Desaloca variáveis*/
 	free(x);
 	free(b);
 	desalocarMatrizQuadDoub(&MA,j_order);
+	
+	MPI_Finalize();
 
 	return EXIT_SUCCESS;
 }
@@ -182,13 +195,9 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	double *erros;
 	double diagonal, result;
 	register int i=0,j=0;
-	int id=0, p=0;
 
-	xAnt = (double *)malloc(tamanho*sizeof(double));
+	xAnt = (double *)calloc(tamanho,sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
-
-	for(i=0;i<tamanho;++i)
-		xAnt[i]=0;
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
 	//para dividir no MPI
@@ -203,10 +212,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
-	/*Inicia os processos MPI*/
-	MPI_Init(&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &id);
-	MPI_Comm_size(MPI_COMM_WORLD, &p);
+
 	
 	//calculo dos resultados
 	do
@@ -235,7 +241,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
     }
 	*/
 	
-	MPI_Finalize();
 	return 1;
 }
 
