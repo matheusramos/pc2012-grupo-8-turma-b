@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 
 	alocarMatrizQuadDoub(&MA,j_order); //TODO:Paralelizar alocacao enquanto ocorre o resto da leitura
 	b = (double *) calloc(j_order,sizeof(double)); //TODO: pode ser paralelizado
-	x = (double *) calloc(j_order,sizeof(double));
+	x = (double *) calloc(j_order,sizeof(double)); //TODO: idem
 	
 	scanf("%d",&j_row_test);
 	scanf("%lf",&j_error);
@@ -182,11 +182,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	double diagonal, result;
 	register int i=0,j=0;
 
-	xAnt = (double *)malloc(tamanho*sizeof(double));
-	erros = (double *)malloc(tamanho*sizeof(double));
-
-	for(i=0;i<tamanho;++i)
-		xAnt[i]=0;
+	xAnt = (double *) calloc(tamanho,sizeof(double));
+	erros = (double *) malloc(tamanho*sizeof(double));
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
 	//para dividir no MPI
@@ -197,7 +194,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		for(j=0;j<tamanho;++j)
 			MA[i][j]=MA[i][j]/diagonal;
 	}
-
+	
+	/*Critério de convergência das linhas e das colunas*/
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
@@ -206,14 +204,14 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	{
 		for(i=0;i<tamanho;i++)
 		{
-			result =0;
-		   	for (j=0;j<tamanho;j++)
-			{
-		        if(i!=j)
-		            result = result + ((-1)*MA[i][j]*xAnt[j]);
-		    }
-		    x[i]=result + b[i];
-			erros[i]=fabs(x[i]-xAnt[i]);
+			result = 0;
+			
+			for (j=0; j<tamanho; j++)
+				if(i!=j)
+					result = result + ((-1)*MA[i][j]*xAnt[j]);
+
+			x[i]=result + b[i];
+			erros[i] = fabs(x[i]-xAnt[i]);
 		}
 		//salva os valores anteriores
 		for(i=0;i<tamanho;i++)
