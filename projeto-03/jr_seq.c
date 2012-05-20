@@ -199,10 +199,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	}
 
 	if(criterioLinhasColunas(MA,tamanho)==0)
-	{
-		printf("A matriz A falhou na verificação do critério das linhas e/ou das colunas\n");
 		return 0;
-	}
 	
 	//calculo dos resultados
 	do
