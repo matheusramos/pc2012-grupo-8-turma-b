@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<mpi.h>
 
-int jacobiRichardson(double **,double *,double *,int,double,double,int *);
+int jacobiRichardson(double **,double *,double *,int,double,double,int *, int, char **);
 
 /**
  * Verifica os critérios de linhas e colunas:
@@ -154,7 +155,7 @@ int main(int argc, char **argv)
 	//imprimirMatrizQuadDoub(MA,j_order);
 
 	/*Chama o método numérico*/
-	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes))
+	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes, argc,argv))
 	{
 		fprintf(stderr,"Falha: Matriz não atende ao critério de convergência");
 		return EXIT_FAILURE;
@@ -175,12 +176,13 @@ int main(int argc, char **argv)
  * @return 
  * FALSE se não passar em algum critério de convergência.
  */
-int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes){
+int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int argc, char **argv){
 
 	double *xAnt;
 	double *erros;
 	double diagonal, result;
 	register int i=0,j=0;
+	int id=0, p=0;
 
 	xAnt = (double *)malloc(tamanho*sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
@@ -200,6 +202,11 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
+	
+	/*Inicia os processos MPI*/
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &id);
+	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
 	//calculo dos resultados
 	do
@@ -227,6 +234,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
         printf("x%d = %8.5f\n", i+1, x[i]);
     }
 	*/
+	
+	MPI_Finalize();
 	return 1;
 }
 
