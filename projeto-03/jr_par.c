@@ -191,16 +191,21 @@ int main(int argc, char **argv)
  * @return 
  * FALSE se não passar em algum critério de convergência.
  */
-int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int id,int num_proc){
+int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int id,int proc_num){
 
 	double *xAnt;
 	double *erros;
 	double diagonal, result;
 	register int i=0,j=0;
-	MPI_Datatype valorX;
+	MPI_Datatype vetor_x;
+	MPI_Status status;
 
 	xAnt = (double *)calloc(tamanho,sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
+
+	/*Definição Datatype vetor float x MPI*/
+	MPI_Type_contiguous(tamanho, MPI_FLOAT, &vetor_x);
+	MPI_Type_commit(&vetor_x);	
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
 	//para dividir no MPI
@@ -212,32 +217,42 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			MA[i][j]=MA[i][j]/diagonal;
 	}
 	
-	
-
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
 	//TODO Criar Struct com o valor x e o indice
 	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
 	//calculo dos resultados
+
 	while(*n_iteracoes<MAXiteracoes)
 	{
-		for(i=id;i<tamanho;i+=p)
+		if(proc_num == 0)
 		{
-			result =0;
-		   	for (j=0;j<tamanho;j++)
-			{
-		        if(id!=j)
-		            result = result + ((-1)*MA[id][j]*xAnt[j]);
-		    }
-		    x[id]=result + b[id];
-			erros[id]=fabs(x[id]-xAnt[id]);
+			MPI_Bcast(&x[0],1,vetor_x,0,MPI_COMM_WORLD);
 		}
+		else
+		{
+			MPI_Receive(xAnt,1,vetor_x,0,0,MPI_COMM_WORLD,&status);
+			printf("Oi, eu sou o processo"); 
+		}
+		/*
+			for(i=id;i<tamanho;i+=proc_num)
+			{
+				result =0;
+				for (j=0;j<tamanho;j++)
+				{
+					if(id!=j)
+						result = result + ((-1)*MA[id][j]*xAnt[j]);
+				}
+				x[id]=result + b[id];
+				erros[id]=fabs(x[id]-xAnt[id]);
+			}
 		//salva os valores anteriores
 		for(i=0;i<tamanho;i++)
             xAnt[i]=x[i];
 		
 		++(*n_iteracoes);
+		*/
 	}
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
