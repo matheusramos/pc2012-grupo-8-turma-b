@@ -224,15 +224,14 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
 	//calculo dos resultados
 
-	while(*n_iteracoes<MAXiteracoes)
-	{
+	
 		if(proc_num == 0)
 		{
 			MPI_Bcast(&x[0],1,vetor_x,0,MPI_COMM_WORLD);
 		}
 		else
 		{
-			MPI_Receive(xAnt,1,vetor_x,0,0,MPI_COMM_WORLD,&status);
+			MPI_Recv(xAnt,1,vetor_x,0,0,MPI_COMM_WORLD,&status);
 			printf("Oi, eu sou o processo"); 
 		}
 		/*
@@ -253,7 +252,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		
 		++(*n_iteracoes);
 		*/
-	}
+	
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
