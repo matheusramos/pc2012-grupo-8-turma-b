@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 	}
 	
 	imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
-	printf("ID do processo %d",id);
+	//printf("ID do processo %d",id);
 
 	/*Desaloca variáveis*/
 	free(x);
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
  * @return 
  * FALSE se não passar em algum critério de convergência.
  */
-int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double MAXiteracoes, int *n_iteracoes, int id,int proc_num){
+int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double max_iteracoes, int *n_iteracoes, int id,int proc_num){
 
 	double *xAnt;
 	double *erros;
@@ -230,7 +230,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
 	//calculo dos resultados
 
-	while(*n_iteracoes<MAXiteracoes)
+	do
 	{
 		if(id == 0)
 		{
@@ -241,7 +241,10 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			for(i=0; i<tamanho; i++)
 				xAnt[i] = x[i];
 
+			/*Recebe os novos valores de x*/
 
+			/*Calcula o erro*/
+			erros[id] = fabs(x[id]-xAnt[id]);
 			/*x[100] = 9978; 
 			printf("=====Eu sou o processo Pai de Todos %d ",id);
 			fflush(stdout);
@@ -264,7 +267,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 						result = result + ((-1)*MA[id][j]*xAnt[j]);
 				}
 				x[id] = result + b[id];
-				erros[id] = fabs(x[id]-xAnt[id]);
 			}
 
 			/*
@@ -274,25 +276,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			fflush(stdout);
 			*/
 		}
-		/*
-			for(i=id;i<tamanho;i+=proc_num)
-			{
-				result =0;
-				for (j=0;j<tamanho;j++)
-				{
-					if(id!=j)
-						result = result + ((-1)*MA[id][j]*xAnt[j]);
-				}
-				x[id]=result + b[id];
-				erros[id]=fabs(x[id]-xAnt[id]);
-			}
-		//salva os valores anteriores
-		for(i=0;i<tamanho;i++)
-            xAnt[i]=x[i];
-		*/	
 		++(*n_iteracoes);
-		
-	}
+	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
