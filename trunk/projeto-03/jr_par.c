@@ -134,6 +134,12 @@ int main(int argc, char **argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
 	arquivo = fopen("entradas/matriz250.txt","r");
+
+	if(arquivo == NULL)
+	{
+		fprintf(stderr,"Falha ao abrir arquivo");
+		return EXIT_FAILURE;
+	}
 	
 	fscanf(arquivo,"%d",&j_order);
 
@@ -204,7 +210,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	erros = (double *)malloc(tamanho*sizeof(double));
 
 	/*Definição Datatype vetor float x MPI*/
-	MPI_Type_contiguous(tamanho, MPI_FLOAT, &vetor_x);
+	MPI_Type_contiguous(tamanho, MPI_DOUBLE, &vetor_x);
 	MPI_Type_commit(&vetor_x);	
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
@@ -224,15 +230,24 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
 	//calculo dos resultados
 
-	
-		if(proc_num == 0)
+	x[1] = 1; 
+	x[100] = 9978; 
+	//while(*n_iteracoes<MAXiteracoes)
+	//{
+		if(id == 0)
 		{
-			MPI_Bcast(&x[0],1,vetor_x,0,MPI_COMM_WORLD);
+			printf("=====Eu sou o processo Pai de Todos %d ",id);
+			fflush(stdout);
+			//MPI_Bcast(&(x[0]),1,vetor_x,0,MPI_COMM_WORLD);
+			MPI_Send(&(x[0]),1,vetor_x,1,0,MPI_COMM_WORLD);
+			printf("o valor de x[1] é %lf==============\n",x[1]); 
+			fflush(stdout);
 		}
 		else
 		{
-			MPI_Recv(xAnt,1,vetor_x,0,0,MPI_COMM_WORLD,&status);
-			printf("Oi, eu sou o processo"); 
+			MPI_Recv(&(xAnt[0]),1,vetor_x,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
+			printf("Olá, eu sou o processo de id %d o valor de x[100] é %lf\n",id,xAnt[100]); 
+			fflush(stdout);
 		}
 		/*
 			for(i=id;i<tamanho;i+=proc_num)
@@ -252,7 +267,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		
 		++(*n_iteracoes);
 		*/
-	
+	//}
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
