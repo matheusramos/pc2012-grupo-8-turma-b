@@ -3,6 +3,12 @@
 #include<math.h>
 #include<mpi.h>
 
+typedef struct
+{
+	double valor;
+	int indice;
+} valorIndex;
+
 int jacobiRichardson(double **,double *,double *,int,double,double,int *, int, int);
 
 /**
@@ -133,7 +139,7 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
-	arquivo = fopen("entradas/matriz250.txt","r");
+	arquivo = fopen("entradas/matriz3.txt","r");
 
 	if(arquivo == NULL)
 	{
@@ -197,21 +203,26 @@ int main(int argc, char **argv)
  * @return 
  * FALSE se não passar em algum critério de convergência.
  */
-int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double max_iteracoes, int *n_iteracoes, int id,int proc_num){
+int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO, double max_iteracoes, int *n_iteracoes, int id,int num_proc){
 
 	double *xAnt;
 	double *erros;
 	double diagonal, result;
 	register int i=0,j=0;
-	MPI_Datatype vetor_x;
+	MPI_Datatype mpi_dt_x;
 	MPI_Status status;
+	valorIndex calculado;
+	/*Argumentos para o MPI_DataType da struct valorIndex*/
+	int blen[3] = {1,1,1}; //Quantidade de cada elemento
+	MPI_Aint indices[3] = {0,sizeof(double),sizeof(valorIndex)}; //indice de inicio de cada elemento na struct
+	MPI_Datatype old_types[3] = {MPI_DOUBLE,MPI_INT,MPI_UB}; //tipos dos elementos da struct, MPI_UP -> upperbound, mostra o final da struct
+
+	/*Define o tipo da estrutura valorIndex*/
+	MPI_Type_struct(3,blen,indices,old_types,&mpi_dt_x);
+	MPI_Type_commit(&mpi_dt_x);
 
 	xAnt = (double *)calloc(tamanho,sizeof(double));
 	erros = (double *)malloc(tamanho*sizeof(double));
-
-	/*Definição Datatype vetor float x MPI*/
-	MPI_Type_contiguous(tamanho, MPI_DOUBLE, &vetor_x);
-	MPI_Type_commit(&vetor_x);	
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
 	//para dividir no MPI
@@ -228,10 +239,11 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	
 	//TODO Criar Struct com o valor x e o indice
 	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
+	//TODO Ver pq deu deadlock
 	//calculo dos resultados
 
-	do
-	{
+	//do
+	//{
 		if(id == 0)
 		{
 			/*Envia o vetor de x para todos os processo*/
@@ -242,23 +254,20 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				xAnt[i] = x[i];
 
 			/*Recebe os novos valores de x*/
+			for(i=0; i<tamanho; i++)
+			{
+				MPI_Recv(&calculado,1,mpi_dt_x,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
+				x[calculado.indice] = calculado.valor;
+				erros[calculado.indice] = fabs(x[calculado.indice]-xAnt[calculado.indice]); //calcula o erro
+				printf("O valor é %lf na posicao %d\n",calculado.valor,calculado.indice);
+			}
 
-			/*Calcula o erro*/
-			erros[id] = fabs(x[id]-xAnt[id]);
-			/*x[100] = 9978; 
-			printf("=====Eu sou o processo Pai de Todos %d ",id);
-			fflush(stdout);
-			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			//MPI_Send(&(x[0]),tamanho,MPI_DOUBLE,1,0,MPI_COMM_WORLD);
-			printf("o valor de x[1] é %lf==============\n",x[100]); 
-			fflush(stdout);
-			*/
 		}
 		else
 		{
 			MPI_Bcast(&(xAnt[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
 
-			for(i=id;i<tamanho;i+=proc_num)
+			for(i=id;i<tamanho;i+=num_proc)
 			{
 				result = 0;
 				for (j=0;j<tamanho;j++)
@@ -266,18 +275,19 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 					if(id != j)
 						result = result + ((-1)*MA[id][j]*xAnt[j]);
 				}
-				x[id] = result + b[id];
+				//x[id] = result + b[id];
+				calculado.valor = result + b[i];
+				calculado.indice = i;
+				MPI_Send(&calculado,1,mpi_dt_x,0,0,MPI_COMM_WORLD);
 			}
 
 			/*
-			MPI_Bcast(&(xAnt[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			//MPI_Recv(&(xAnt[0]),tamanho,MPI_DOUBLE,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
 			printf("Olá, eu sou o processo de id %d o valor de x[100] é %lf\n",id,xAnt[100]); 
 			fflush(stdout);
 			*/
 		}
 		++(*n_iteracoes);
-	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
+	//}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
