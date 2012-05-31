@@ -185,7 +185,8 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
+	if(id == 0)
+		imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
 	//printf("ID do processo %d",id);
 
 	/*Desaloca variáveis*/
@@ -193,7 +194,6 @@ int main(int argc, char **argv)
 	free(b);
 	desalocarMatrizQuadDoub(&MA,j_order);
 	
-	MPI_Finalize();
 
 	return EXIT_SUCCESS;
 }
@@ -208,9 +208,11 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	double *xAnt;
 	double *erros;
 	double diagonal, result;
+	int flag_terminou=0;
 	register int i=0,j=0;
 	MPI_Datatype mpi_dt_x;
 	MPI_Status status;
+	MPI_Request request;
 	valorIndex calculado;
 	/*Argumentos para o MPI_DataType da struct valorIndex*/
 	int blen[3] = {1,1,1}; //Quantidade de cada elemento
@@ -244,8 +246,11 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		{
 			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
 			fflush(stdout);
+			
+			/*Envia flag para não terminar os processos*/
+			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
 
-			/*Envia o vetor de x para todos os processo*/
+			/*Envia o vetor de x para todos os processos*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
 			printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
 			fflush(stdout);
@@ -272,8 +277,18 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 
 			++(*n_iteracoes);
 		}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
+		
+		flag_terminou = 1;
+		/*Envia flag para terminar execução*/
+		MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
 
+		/*flag_terminou = 1;
+		for(i=1;i<num_proc;i++)
+			MPI_Isend(&flag_terminou,1,MPI_INT,i,0,MPI_COMM_WORLD,&request);
+			*/
 		/*TODO Fazer o processo 0 matar os outros aqui*/
+		//MPI_Abort(MPI_COMM_WORLD,0);
+
 	}
 	else
 	{
@@ -283,6 +298,10 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			fflush(stdout);
 
 			/*Recebe a mensagem to nó 0*/
+			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
+			if(flag_terminou == 1)
+				break;
+
 			printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
 			fflush(stdout);
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
@@ -312,6 +331,10 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			fflush(stdout);
 
 			++(*n_iteracoes);
+
+			/*MPI_Irecv(&flag_terminou,1,MPI_INT,0,0,MPI_COMM_WORLD,&request);
+			printf("[RECEBIDO] ID %d - Flag Terminou = %d [ITERACAO %d]\n",id,flag_terminou,*n_iteracoes);*/
+		//}while(1==1);
 		}while(*n_iteracoes<max_iteracoes);
 		
 	}
@@ -321,6 +344,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
         printf("x%d = %8.5f\n", i+1, x[i]);
     }
 	*/
+	MPI_Finalize();
 	
 	return 1;
 }
