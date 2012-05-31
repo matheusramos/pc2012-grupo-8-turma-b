@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	//imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
+	imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
 	//printf("ID do processo %d",id);
 
 	/*Desaloca variáveis*/
@@ -237,18 +237,14 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
-	//TODO Criar Struct com o valor x e o indice
-	//TODO Send a struct p o 0 e o 0 monta o vetor e manda para todas
-	//TODO Ver pq deu deadlock
 	//calculo dos resultados
-
-	do
+	if(id == 0)
 	{
-		printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
-		fflush(stdout);
-
-		if(id == 0)
+		do
 		{
+			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);
+
 			/*Envia o vetor de x para todos os processo*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
 			printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
@@ -271,9 +267,21 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				erros[calculado.indice] = fabs(x[calculado.indice]-xAnt[calculado.indice]); //calcula o erro
 			}
 
-		}
-		else
+			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);
+
+			++(*n_iteracoes);
+		}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
+
+		/*TODO Fazer o processo 0 matar os outros aqui*/
+	}
+	else
+	{
+		do
 		{
+			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);
+
 			/*Recebe a mensagem to nó 0*/
 			printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
 			fflush(stdout);
@@ -299,17 +307,14 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				fflush(stdout);
 				MPI_Send(&calculado,1,mpi_dt_x,0,0,MPI_COMM_WORLD);
 			}
-			
-			/*
-			printf("Olá, eu sou o processo de id %d o valor de x[100] é %lf\n",id,xAnt[100]); 
-			fflush(stdout);
-			*/
-		}
-		printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
-		fflush(stdout);
 
-		++(*n_iteracoes);
-	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
+			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);
+
+			++(*n_iteracoes);
+		}while(*n_iteracoes<max_iteracoes);
+		
+	}
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
