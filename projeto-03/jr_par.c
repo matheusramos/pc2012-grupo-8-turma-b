@@ -38,22 +38,22 @@ int criterioLinhasColunas(double **MA, int tamanho)
 }
 
 int verificarErro(double *erros, double *x, int tamanho, double ERRO){
-    int i;
-    double maxErro=0,maxSol=0;
+	int i;
+	double maxErro=0,maxSol=0;
 
-    //pega o valor máximo do erro e da solução
-    for(i=0;i<tamanho;i++)
+	//pega o valor máximo do erro e da solução
+	for(i=0;i<tamanho;i++)
 	{
-        if(maxErro<erros[i]) 
+		if(maxErro<erros[i]) 
 			maxErro=erros[i];
-        if(maxSol<x[i]) 
+		if(maxSol<x[i]) 
 			maxSol=x[i];
-    }
+	}
     
 	if(maxErro/maxSol < ERRO)
-        return 1;
-
-    else return 0;
+		return 1;
+	else 
+		return 0;
 }
 
 /**
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
+	//imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
 	//printf("ID do processo %d",id);
 
 	/*Desaloca variáveis*/
@@ -242,52 +242,74 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	//TODO Ver pq deu deadlock
 	//calculo dos resultados
 
-	//do
-	//{
+	do
+	{
+		printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+		fflush(stdout);
+
 		if(id == 0)
 		{
 			/*Envia o vetor de x para todos os processo*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
+			printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
+			fflush(stdout);
 
 			/*Atualiza os valores anteriores para cálculo de erro*/
+			/*TODO: Para matrizes grandes compensa usar o OpenMP*/
 			for(i=0; i<tamanho; i++)
 				xAnt[i] = x[i];
 
 			/*Recebe os novos valores de x*/
 			for(i=0; i<tamanho; i++)
 			{
+				printf("[RECEBENDO] ID %d - Posicao x [ITERACAO %d]\n",id,*n_iteracoes);
+				fflush(stdout);
 				MPI_Recv(&calculado,1,mpi_dt_x,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
+				printf("[RECEBIDO] ID %d - x[%d]=%lf [ITERACAO %d]\n",id,calculado.indice,calculado.valor,*n_iteracoes);
+				fflush(stdout);
 				x[calculado.indice] = calculado.valor;
 				erros[calculado.indice] = fabs(x[calculado.indice]-xAnt[calculado.indice]); //calcula o erro
-				printf("O valor é %lf na posicao %d\n",calculado.valor,calculado.indice);
 			}
 
 		}
 		else
 		{
-			MPI_Bcast(&(xAnt[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
+			/*Recebe a mensagem to nó 0*/
+			printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
+			fflush(stdout);
+			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
+			printf("[RECEBIDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
+			fflush(stdout);
 
-			for(i=id;i<tamanho;i+=num_proc)
+
+			for(i=id-1;i<tamanho;i+=(num_proc-1)) //id-1 porque o processo 0 não calcula o valor de x, dessa maneira outro processo deve calculá-lo
 			{
 				result = 0;
 				for (j=0;j<tamanho;j++)
 				{
-					if(id != j)
-						result = result + ((-1)*MA[id][j]*xAnt[j]);
+					if(i != j) //não utiliza os valores da diagonal principal no cálculo
+						result = result + ((-1)*MA[i][j]*x[j]);
 				}
-				//x[id] = result + b[id];
+				/*Guarda os valores na struct*/
 				calculado.valor = result + b[i];
 				calculado.indice = i;
+
+				/*Envia o novo valor de x calculado*/
+				printf("[ENVIADO] ID %d - x[%d]=%lf para o Processo 0 [ITERACAO %d]\n",id,i,calculado.valor,*n_iteracoes);
+				fflush(stdout);
 				MPI_Send(&calculado,1,mpi_dt_x,0,0,MPI_COMM_WORLD);
 			}
-
+			
 			/*
 			printf("Olá, eu sou o processo de id %d o valor de x[100] é %lf\n",id,xAnt[100]); 
 			fflush(stdout);
 			*/
 		}
+		printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+		fflush(stdout);
+
 		++(*n_iteracoes);
-	//}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
+	}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
 
 	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
     for(i=0;i<tamanho;i++){
