@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<math.h>
 #include<mpi.h>
+#include<omp.h>
 
 typedef struct
 {
@@ -207,7 +208,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 
 	double *xAnt;
 	double *erros;
-	double diagonal, result;
+	double diagonal=0, result=0;
 	int flag_terminou=0;
 	register int i=0,j=0;
 	MPI_Datatype mpi_dt_x;
@@ -227,7 +228,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	erros = (double *)malloc(tamanho*sizeof(double));
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
-	//para dividir no MPI
+	#pragma omp for private(j)
 	for(i=0;i<tamanho;++i)
 	{
 		diagonal = MA[i][i];
@@ -244,36 +245,39 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	{
 		do
 		{
-			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+			/*printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
 			fflush(stdout);
+			*/
 			
 			/*Envia flag para não terminar os processos*/
 			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
 
 			/*Envia o vetor de x para todos os processos*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
+			/*printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
 			fflush(stdout);
+			*/
 
 			/*Atualiza os valores anteriores para cálculo de erro*/
-			/*TODO: Para matrizes grandes compensa usar o OpenMP*/
+			#pragma omp for
 			for(i=0; i<tamanho; i++)
 				xAnt[i] = x[i];
 
 			/*Recebe os novos valores de x*/
+			#pragma omp for private(calculado)
 			for(i=0; i<tamanho; i++)
 			{
-				printf("[RECEBENDO] ID %d - Posicao x [ITERACAO %d]\n",id,*n_iteracoes);
-				fflush(stdout);
+				/*printf("[RECEBENDO] ID %d - Posicao x [ITERACAO %d]\n",id,*n_iteracoes);
+				fflush(stdout);*/
 				MPI_Recv(&calculado,1,mpi_dt_x,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
-				printf("[RECEBIDO] ID %d - x[%d]=%lf [ITERACAO %d]\n",id,calculado.indice,calculado.valor,*n_iteracoes);
-				fflush(stdout);
+				/*printf("[RECEBIDO] ID %d - x[%d]=%lf [ITERACAO %d]\n",id,calculado.indice,calculado.valor,*n_iteracoes);
+				fflush(stdout);*/
 				x[calculado.indice] = calculado.valor;
 				erros[calculado.indice] = fabs(x[calculado.indice]-xAnt[calculado.indice]); //calcula o erro
 			}
 
-			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);
+			/*printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);*/
 
 			++(*n_iteracoes);
 		}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
@@ -291,44 +295,49 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 
 	}
 	else
+
 	{
 		do
 		{
-			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);
+			/*printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);*/
 
 			/*Recebe a mensagem to nó 0*/
 			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
 			if(flag_terminou == 1)
 				break;
 
-			printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
-			fflush(stdout);
+			/*printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
+			fflush(stdout);*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			printf("[RECEBIDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
+			/*printf("[RECEBIDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
 			fflush(stdout);
+			*/
 
 
 			for(i=id-1;i<tamanho;i+=(num_proc-1)) //id-1 porque o processo 0 não calcula o valor de x, dessa maneira outro processo deve calculá-lo
 			{
 				result = 0;
+
+				#pragma omp parallel for reduction (+:result)
 				for (j=0;j<tamanho;j++)
 				{
 					if(i != j) //não utiliza os valores da diagonal principal no cálculo
-						result = result + ((-1)*MA[i][j]*x[j]);
+						result += ((-1)*MA[i][j]*x[j]);
 				}
 				/*Guarda os valores na struct*/
 				calculado.valor = result + b[i];
 				calculado.indice = i;
 
 				/*Envia o novo valor de x calculado*/
-				printf("[ENVIADO] ID %d - x[%d]=%lf para o Processo 0 [ITERACAO %d]\n",id,i,calculado.valor,*n_iteracoes);
-				fflush(stdout);
+				/*printf("[ENVIADO] ID %d - x[%d]=%lf para o Processo 0 [ITERACAO %d]\n",id,i,calculado.valor,*n_iteracoes);
+				fflush(stdout);*/
 				MPI_Send(&calculado,1,mpi_dt_x,0,0,MPI_COMM_WORLD);
 			}
 
-			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+			/*printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
 			fflush(stdout);
+			*/
 
 			++(*n_iteracoes);
 

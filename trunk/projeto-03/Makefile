@@ -1,7 +1,7 @@
 all: jr_par
 
 CC = mpicc
-C_FLAGS = -Wall 
+C_FLAGS = -Wall -fopenmp
 
 jr_par.o: jr_par.c
 	$(CC) $(C_FLAGS) -c jr_par.c
