@@ -140,11 +140,11 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
-	arquivo = fopen("entradas/matriz3.txt","r");
+	arquivo = fopen("../../entradas/peq/matriz4000.txt","r");
 
 	if(arquivo == NULL)
 	{
-		fprintf(stderr,"Falha ao abrir arquivo");
+		fprintf(stderr,"Falha ao abrir arquivo\n");
 		return EXIT_FAILURE;
 	}
 	
@@ -213,7 +213,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	register int i=0,j=0;
 	MPI_Datatype mpi_dt_x;
 	MPI_Status status;
-	MPI_Request request;
 	valorIndex calculado;
 	/*Argumentos para o MPI_DataType da struct valorIndex*/
 	int blen[3] = {1,1,1}; //Quantidade de cada elemento
