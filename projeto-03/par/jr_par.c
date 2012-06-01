@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
-	arquivo = fopen("../../entradas/peq/matriz4000.txt","r");
+	arquivo = fopen("../entradas/peq/matriz250.txt","r");
 
 	if(arquivo == NULL)
 	{
@@ -244,9 +244,9 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	{
 		do
 		{
-			/*printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
+			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
 			fflush(stdout);
-			*/
+			
 			
 			/*Envia flag para não terminar os processos*/
 			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -275,8 +275,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				erros[calculado.indice] = fabs(x[calculado.indice]-xAnt[calculado.indice]); //calcula o erro
 			}
 
-			/*printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);*/
+			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
+			fflush(stdout);
 
 			++(*n_iteracoes);
 		}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
