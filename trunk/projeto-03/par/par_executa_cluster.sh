@@ -1,4 +1,4 @@
-for i in `ls peq/jr_par*.c`
+for i in `ls peq/jr_par*`
 do
 	for (( j = 0 ; j < 5 ; j++ ))
 	do
@@ -6,7 +6,7 @@ do
 	done
 done
 
-for i in `ls grd/jr_par*.c`
+for i in `ls grd/jr_par*`
 do
 	for (( j = 0 ; j < 3 ; j++ ))
 	do
