@@ -4,12 +4,6 @@
 #include<mpi.h>
 #include<omp.h>
 
-typedef struct
-{
-	double valor;
-	int indice;
-} valorIndex;
-
 int jacobiRichardson(double **,double *,double *,int,double,double,int *, int, int);
 
 /**
