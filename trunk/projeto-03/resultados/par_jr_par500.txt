@@ -1,0 +1,65 @@
+mpirun: killing job...
+
+mpirun noticed that job rank 0 with PID 4960 on node wolverine exited on signal 15 (Terminated). 
+
+real	7m16.146s
+user	0m0.248s
+sys	0m0.104s
+mpirun: killing job...
+
+[x-men:12982] [0,0,0] ORTE_ERROR_LOG: Timeout in file base/pls_base_orted_cmds.c at line 275
+[x-men:12982] [0,0,0] ORTE_ERROR_LOG: Timeout in file pls_rsh_module.c at line 1155
+[x-men:12982] [0,0,0] ORTE_ERROR_LOG: Timeout in file errmgr_hnp.c at line 90
+[x-men:12982] ERROR: A daemon on node hulk failed to start as expected.
+[x-men:12982] ERROR: There may be more information available from
+[x-men:12982] ERROR: the remote shell (see above).
+[x-men:12982] The daemon received a signal 2.
+[x-men:12982] [0,0,0] ORTE_ERROR_LOG: Timeout in file base/pls_base_orted_cmds.c at line 275
+[x-men:12982] [0,0,0] ORTE_ERROR_LOG: Timeout in file pls_rsh_module.c at line 1155
+--------------------------------------------------------------------------
+WARNING: mpirun has exited before it received notification that all
+started processes had terminated.  You should double check and ensure
+that there are no runaway processes still executing.
+--------------------------------------------------------------------------
+
+real	0m11.858s
+user	0m0.236s
+sys	0m0.076s
+mpirun: killing job...
+
+mpirun noticed that job rank 0 with PID 5013 on node wolverine exited on signal 15 (Terminated). 
+
+real	0m38.083s
+user	0m0.216s
+sys	0m0.128s
+mpirun: killing job...
+
+mpirun noticed that job rank 0 with PID 5040 on node wolverine exited on signal 15 (Terminated). 
+
+real	0m0.894s
+user	0m0.248s
+sys	0m0.088s
+Killed by signal 2.
+Killed by signal 2.
+Killed by signal 2.
+mpirun: killing job...
+
+[x-men:13090] ERROR: A daemon on node elektra failed to start as expected.
+[x-men:13090] ERROR: There may be more information available from
+[x-men:13090] ERROR: the remote shell (see above).
+[x-men:13090] ERROR: The daemon exited unexpectedly with status 255.
+[x-men:13090] ERROR: A daemon on node noturno failed to start as expected.
+[x-men:13090] ERROR: There may be more information available from
+[x-men:13090] ERROR: the remote shell (see above).
+[x-men:13090] ERROR: The daemon exited unexpectedly with status 255.
+[x-men:13090] [0,0,0] ORTE_ERROR_LOG: Timeout in file base/pls_base_orted_cmds.c at line 275
+[x-men:13090] [0,0,0] ORTE_ERROR_LOG: Timeout in file pls_rsh_module.c at line 1155
+[x-men:13090] [0,0,0] ORTE_ERROR_LOG: Timeout in file errmgr_hnp.c at line 90
+[x-men:13090] ERROR: A daemon on node gambit failed to start as expected.
+[x-men:13090] ERROR: There may be more information available from
+[x-men:13090] ERROR: the remote shell (see above).
+[x-men:13090] ERROR: The daemon exited unexpectedly with status 255.
+
+real	0m10.302s
+user	0m0.244s
+sys	0m0.096s
