@@ -262,7 +262,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				calculado = malloc((posFim-posIni+1)*sizeof(double));
 				
 				
-				MPI_Recv(&calculado,(posFim-posIni+1),MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
+				MPI_Recv(calculado,(posFim-posIni+1),MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
 				
 				//salvando os valores recebidos na estrutura x
 				for(j=0;j <= (posFim - posIni); ++j)
@@ -332,7 +332,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			/*Envia o novo valor de x calculado*/
 				/*printf("[ENVIADO] ID %d - x[%d]=%lf para o Processo 0 [ITERACAO %d]\n",id,i,calculado.valor,*n_iteracoes);
 				fflush(stdout);*/
-			MPI_Send(&calculado,(posFim-posIni+1),MPI_DOUBLE,0,0,MPI_COMM_WORLD);
+			MPI_Send(calculado,(posFim-posIni+1),MPI_DOUBLE,0,0,MPI_COMM_WORLD);
 			/*printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
 			fflush(stdout);
 			*/
