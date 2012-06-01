@@ -1,0 +1,540 @@
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+
+real	0m0.361s
+user	0m0.220s
+sys	0m0.104s
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+
+real	0m0.360s
+user	0m0.256s
+sys	0m0.080s
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+
+real	0m0.352s
+user	0m0.248s
+sys	0m0.084s
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+
+real	0m0.357s
+user	0m0.244s
+sys	0m0.088s
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Could not execute the executable "/home/grupo08turmaB/pc2012-grupo-8-turma-b-read-only/projeto-03/par/peq/jr_par3.c": Exec format error
+
+This could mean that your PATH or executable name is wrong, or that you do not
+have the necessary permissions.  Please ensure that the executable is able to be
+found and executed.
+
+--------------------------------------------------------------------------
+
+real	0m0.360s
+user	0m0.220s
+sys	0m0.104s
