@@ -97,7 +97,9 @@ double calcularResultadoLinha(double **A, double *x, int tamanho, int linha)
 {
 	register int j=0;
 	double resultado=0;
+	
 
+	#pragma omp parallel for reduction(+:resultado)
 	for(j=0; j<tamanho; j++)
 		resultado += A[linha][j]*x[j];
 	
@@ -134,7 +136,7 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
-	arquivo = fopen("../entradas/grd/matriz4000.txt","r");
+	arquivo = fopen("../entradas/peq/matriz250.txt","r");
 
 	if(arquivo == NULL)
 	{
@@ -166,11 +168,10 @@ int main(int argc, char **argv)
 		}
 
 	/*Lê o vetor b*/
+	#pragma omp for
 	for(i=0; i<j_order; i++)
 		fscanf(arquivo,"%lf",&b[i]);
-
-	//imprimirMatrizQuadDoub(MA,j_order);
-		
+	
 
 	/*Chama o método numérico*/
 	if(!jacobiRichardson(MA,x,b,j_order,j_error,j_ite_max,&n_iteracoes, id, p))
@@ -182,8 +183,8 @@ int main(int argc, char **argv)
 	
 	if(id == 0)
 		imprimirResultado(MA,x,b,j_order,n_iteracoes,j_row_test);
-	//printf("ID do processo %d",id);
 
+	
 	/*Desaloca variáveis*/
 	free(x);
 	free(b);
@@ -212,7 +213,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	erros = (double *)malloc(tamanho*sizeof(double));
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
-	#pragma omp for private(j)
+	
+	#pragma omp for private(j,diagonal)
 	for(i=0;i<tamanho;++i)
 	{
 		diagonal = MA[i][i];
@@ -224,29 +226,25 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	if(criterioLinhasColunas(MA,tamanho)==0)
 		return 0;
 	
-	//calculo dos resultados
+	//calculo dos resultaddos
 	if(id == 0)
 	{
 		do
-		{
-			printf("[INFO] ID %d, INICIANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);
-			
+		{			
 			
 			/*Envia flag para não terminar os processos*/
 			MPI_Bcast(&flag_terminou,1,MPI_INT,0,MPI_COMM_WORLD);
 
 			/*Envia o vetor de x para todos os processos*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			/*printf("[ENVIADO] ID %d - Vetor x pro broadcast [ITERACAO %d]\n",id,*n_iteracoes);
-			fflush(stdout);
-			*/
-
+	
 			/*Atualiza os valores anteriores para cálculo de erro*/
+			#pragma omp for
 			for(i=0; i<tamanho; i++)
 				xAnt[i] = x[i];
 
 			/*Recebe os novos valores de x, o i esta sendo utilizado para representar o rank do processo*/
+			#pragma omp for private(j, posIni, posFim, calculado)
 			for(i=1; i<num_proc; i++)
 			{
 				/*Define a posicao de inicio e de fim que o processo sera responsavel por calcular, sendo que no processo 0 nada calcula*/
@@ -272,9 +270,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 				}
 			}
 
-			printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);
-
 			++(*n_iteracoes);
 			
 		}while(verificarErro(erros,x,tamanho,ERRO)==0 && *n_iteracoes<max_iteracoes);
@@ -297,12 +292,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			if(flag_terminou == 1)
 				break;
 
-			/*printf("[RECEBENDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
-			fflush(stdout);*/
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
-			/*printf("[RECEBIDO] ID %d, Vetor x por broadcast [ITERACAO %d]\n",id, *n_iteracoes);
-			fflush(stdout);
-			*/
 			
 			/*Define a posicao de inicio e de fim que o processo sera responsavel por calcular*/
 			posIni = (id-1)*(tamanho/(num_proc-1));
@@ -316,7 +306,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			calculado = malloc((posFim-posIni+1)*sizeof(double));
 
 
-			/*calculo das respectivas variáveis do processo*/
+			/*calculo das respectivas variáveis que o  processo deve calcular*/
+			#pragma omp for private(j, result)
 			for(i=posIni;i <= posFim; ++i)
 			{
 				result = 0;
@@ -330,12 +321,8 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			}
 
 			/*Envia o novo valor de x calculado*/
-				/*printf("[ENVIADO] ID %d - x[%d]=%lf para o Processo 0 [ITERACAO %d]\n",id,i,calculado.valor,*n_iteracoes);
-				fflush(stdout);*/
 			MPI_Send(calculado,(posFim-posIni+1),MPI_DOUBLE,0,0,MPI_COMM_WORLD);
-			/*printf("[INFO] ID %d, TERMINANDO a iteração %d\n",id,*n_iteracoes);
-			fflush(stdout);
-			*/
+			
 
 			++(*n_iteracoes);
 
@@ -343,11 +330,6 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 		
 	}
 
-	/*printf("Resultado pelo Metodo de Jacobi-Richardson: \n");
-    for(i=0;i<tamanho;i++){
-        printf("x%d = %8.5f\n", i+1, x[i]);
-    }
-	*/
 	MPI_Finalize();
 	
 	return 1;
