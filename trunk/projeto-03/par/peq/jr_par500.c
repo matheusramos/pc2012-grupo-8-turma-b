@@ -335,3 +335,4 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 	return 1;
 }
 
+
