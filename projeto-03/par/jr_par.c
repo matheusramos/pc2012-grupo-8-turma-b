@@ -99,7 +99,7 @@ double calcularResultadoLinha(double **A, double *x, int tamanho, int linha)
 	double resultado=0;
 	
 
-	#pragma omp parallel for reduction(+:resultado)
+	//#pragma omp parallel for reduction(+:resultado)
 	for(j=0; j<tamanho; j++)
 		resultado += A[linha][j]*x[j];
 	
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	
-	arquivo = fopen("../entradas/peq/matriz250.txt","r");
+	arquivo = fopen("../entradas/grd/matriz4000.txt","r");
 
 	if(arquivo == NULL)
 	{
@@ -146,8 +146,8 @@ int main(int argc, char **argv)
 	
 	fscanf(arquivo,"%d",&j_order);
 
-	alocarMatrizQuadDoub(&MA,j_order); //TODO:Paralelizar alocacao enquanto ocorre o resto da leitura
-	b = (double *) calloc(j_order,sizeof(double)); //TODO: pode ser paralelizado
+	alocarMatrizQuadDoub(&MA,j_order); 
+	b = (double *) calloc(j_order,sizeof(double)); 
 	x = (double *) calloc(j_order,sizeof(double));
 	
 	fscanf(arquivo,"%d",&j_row_test);
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 		}
 
 	/*Lê o vetor b*/
-	#pragma omp for
+	//#pragma omp for
 	for(i=0; i<j_order; i++)
 		fscanf(arquivo,"%lf",&b[i]);
 	
@@ -214,7 +214,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 
 	//As linhas da matriz A e da matriz B são dividida pelos respectivos elementos da diagonal
 	
-	#pragma omp for private(j,diagonal)
+	//#pragma omp for private(j,diagonal)
 	for(i=0;i<tamanho;++i)
 	{
 		diagonal = MA[i][i];
@@ -239,7 +239,7 @@ int jacobiRichardson(double **MA, double *x, double *b, int tamanho, double ERRO
 			MPI_Bcast(&(x[0]),tamanho,MPI_DOUBLE,0,MPI_COMM_WORLD);
 	
 			/*Atualiza os valores anteriores para cálculo de erro*/
-			#pragma omp for
+			//#pragma omp for
 			for(i=0; i<tamanho; i++)
 				xAnt[i] = x[i];
 
