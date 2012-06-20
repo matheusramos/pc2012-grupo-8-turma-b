@@ -10,22 +10,82 @@ void alocarVetorString(char ***,long int *, int);
 void realocaVetorString(char ***,long int *,int);
 
 
-int insereOrdenado(char **vetor, char *palavra, int tamanho)
+int insereOrdenado(char **vetor, char *palavra, long int tamanho)
 {
-	int i=0,j;
-	while(i<tamanho && strcmp(vetor[i],palavra)<0)
-		++i;
+	long int i=0,j;
 	
-	/*palavra ja foi inserida*/
-	if(strcmp(vetor[i],palavra)==0)
-		return 0;
-	else
+	/*while(i<tamanho && strcmp(vetor[i],palavra)<0)
+		++i;*/
+
+	if(tamanho==0)
 	{
-		for(j=tamanho;j>=i;--j)
-			strcpy(vetor[j+1],vetor[j]);
-		strcpy(vetor[i],palavra);
-		return 1;
+		strcpy(vetor[0],palavra);
+		printf("Tamanho eh zero\n");
 	}
+	else
+	{	
+		int inf=0,pos=0;
+		pos  = tamanho-1;
+		printf("Tamanho: %ld\n",tamanho);
+		fflush(stdout);
+	
+		/*caso do unico elemento repetido*/
+		if(pos==0)
+		{
+			/*jah foi inserido*/
+			if(strcmp(vetor[0],palavra)==0)
+				return 0;
+			else if (strcmp(vetor[0],palavra)<0)
+				strcpy(vetor[1],palavra);
+			else
+			{
+				strcpy(vetor[1],vetor[0]);
+				strcpy(vetor[0],palavra);
+
+			}
+
+		}
+
+		while(inf<pos)
+		{
+			int meio=(inf+pos)/2;
+			int comp=strcmp(vetor[meio],palavra);
+			if(strcmp(vetor[meio],palavra)==0)
+			{
+				i=-1;
+				break;
+			}
+			else if (strcmp(vetor[meio],palavra)<0)
+				inf = meio+1;
+			else
+			{
+				pos = meio-1;
+			}			
+		}
+	
+		/*palavra ja foi inserida*/
+		if(i==-1)
+			return 0;
+		
+		else
+		{
+			
+			printf("Pos: %d %s\n" ,pos,palavra);
+			fflush(stdout);
+			if(strcmp(vetor[pos],palavra)<0)
+				i = pos+1;
+			else
+				i = pos;
+
+			for(j=tamanho;j>=i;--j)
+				strcpy(vetor[j+1],vetor[j]);
+			strcpy(vetor[i],palavra);
+
+
+		}
+	}
+
+	return 1;
 }
 
 int main(int argc, char **argv)
@@ -64,7 +124,7 @@ int main(int argc, char **argv)
 	alocarVetorString(&vetor_maior,&t_vet_maior,T_STR_MAIOR); // aloca vetor maior
 
 	/*Separa as palavras no vetor maior ou menor*/
-	palavra_atual = strtok(s_texto," ,-");
+	palavra_atual = strtok(s_texto," ,-\n\r");
 	while(palavra_atual != NULL)
 	{
 
@@ -75,6 +135,7 @@ int main(int argc, char **argv)
 
 			//INSERIR ORDENADO AQUI
 			//strcpy(vetor_menor[i_menor++],palavra_atual);
+			printf("[%ld] %s\n",i_menor,palavra_atual);
 			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
 				i_menor++;
 			
@@ -90,12 +151,12 @@ int main(int argc, char **argv)
 				i_maior++;
 		}
 
-		palavra_atual = strtok(NULL," ,-");
+		palavra_atual = strtok(NULL," ,-\n\r");
 	}
 
 	printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
 
-	return EXIT_SUCCESS;
+	return EXIT_SUCCESS	;
 }
 
 /**
