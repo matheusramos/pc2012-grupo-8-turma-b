@@ -21,7 +21,7 @@ int insereOrdenado(char **vetor, char *palavra, int tamanho)
 		return 0;
 	else
 	{
-		for(j=tamanho;j>i;--j)
+		for(j=tamanho;j>=i;--j)
 			strcpy(vetor[j+1],vetor[j]);
 		strcpy(vetor[i],palavra);
 		return 1;
