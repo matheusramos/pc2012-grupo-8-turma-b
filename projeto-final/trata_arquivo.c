@@ -9,6 +9,25 @@
 void alocarVetorString(char ***,long int *, int);
 void realocaVetorString(char ***,long int *,int);
 
+
+int insereOrdenado(char **vetor, char *palavra, int tamanho)
+{
+	int i=0,j;
+	while(i<tamanho && strcmp(vetor[i],palavra)<0)
+		++i;
+	
+	/*palavra ja foi inserida*/
+	if(strcmp(vetor[i],palavra)==0)
+		return 0;
+	else
+	{
+		for(j=tamanho;j>i;--j)
+			strcpy(vetor[j+1],vetor[j]);
+		strcpy(vetor[i],palavra);
+		return 1;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	FILE *p_texto;
@@ -55,7 +74,10 @@ int main(int argc, char **argv)
 				realocaVetorString(&vetor_menor,&t_vet_menor,T_STR_MENOR);
 
 			//INSERIR ORDENADO AQUI
-			strcpy(vetor_menor[i_menor++],palavra_atual);
+			//strcpy(vetor_menor[i_menor++],palavra_atual);
+			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
+				i_menor++;
+			
 		}
 		else //inserir no vetor maior
 		{
@@ -63,7 +85,9 @@ int main(int argc, char **argv)
 				realocaVetorString(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
 
 			//INSERIR ORDENADO AQUI
-			strcpy(vetor_maior[i_maior++],palavra_atual);
+			//strcpy(vetor_maior[i_maior++],palavra_atual);
+			if(insereOrdenado(vetor_maior,palavra_atual,i_maior))
+				i_maior++;
 		}
 
 		palavra_atual = strtok(NULL," ,-");
