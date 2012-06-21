@@ -10,6 +10,39 @@ void alocarVetorString(char ***,long int *, int);
 void realocaVetorString(char ***,long int *,int);
 
 
+int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho)
+{
+
+	int inf=0,pos=tamanho-1;
+	int meio=0;
+	int posicao=-1;
+	/*Faz a busca binaria para ver se existe a palavra*/
+	while(inf<pos)
+	{
+		meio=(inf+pos)/2;
+		int comp=strcmp(vetor[meio],palavra);
+
+		/*Achou a palavra deve sair*/
+		if(comp==0)
+			break;
+		else if (comp<0)
+			inf = meio+1;
+		else
+		{
+			/*para evitar que pos fique -1*/
+			if(meio==0)
+				pos =0;
+			else
+				pos = meio-1;
+		}			
+	}
+	meio=(inf+pos)/2;
+	if(strcmp(vetor[meio],palavra)==0)
+		posicao = meio;
+
+	return posicao;
+}
+
 int insereOrdenado(char **vetor, char *palavra, long int tamanho)
 {
 	long int i=0,j;
