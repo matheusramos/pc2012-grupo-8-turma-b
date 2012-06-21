@@ -187,9 +187,6 @@ int main(int argc, char **argv)
 	for(i=0;i<i_maior;++i)
 		printf("Palavras menor: %s \n",vetor_maior[i]);	*/
 
-	
-		
-
 	return EXIT_SUCCESS	;
 }
 
