@@ -14,73 +14,68 @@ int insereOrdenado(char **vetor, char *palavra, long int tamanho)
 {
 	long int i=0,j;
 	
-	/*while(i<tamanho && strcmp(vetor[i],palavra)<0)
-		++i;*/
-
+	
+	/*	
+	//INSERTION SORT
+	while(i<tamanho && strcmp(vetor[i],palavra)<0)
+		++i;
+	
+	if(strcmp(vetor[i],palavra)==0)
+		return 0;
+	else
+		for(j=tamanho;j>i;--j)
+			strcpy(vetor[j],vetor[j-1]);
+		strcpy(vetor[i],palavra); */
+	
+	
+	/*Primeira posicao do vetor*/
 	if(tamanho==0)
-	{
 		strcpy(vetor[0],palavra);
-		printf("Tamanho eh zero\n");
-	}
+		
 	else
 	{	
-		int inf=0,pos=0;
-		pos  = tamanho-1;
-		printf("Tamanho: %ld\n",tamanho);
-		fflush(stdout);
-	
-		/*caso do unico elemento repetido*/
-		if(pos==0)
-		{
-			/*jah foi inserido*/
-			if(strcmp(vetor[0],palavra)==0)
-				return 0;
-			else if (strcmp(vetor[0],palavra)<0)
-				strcpy(vetor[1],palavra);
-			else
-			{
-				strcpy(vetor[1],vetor[0]);
-				strcpy(vetor[0],palavra);
+		int inf=0,pos=tamanho-1;
+		int meio=0;
 
-			}
-
-		}
-
+		/*Faz a busca binaria para ver qual posicao inserir a palavra*/
 		while(inf<pos)
 		{
-			int meio=(inf+pos)/2;
+			meio=(inf+pos)/2;
 			int comp=strcmp(vetor[meio],palavra);
-			if(strcmp(vetor[meio],palavra)==0)
-			{
-				i=-1;
+
+			/*Achou a palavra deve sair*/
+			if(comp==0)
 				break;
-			}
-			else if (strcmp(vetor[meio],palavra)<0)
+			else if (comp<0)
 				inf = meio+1;
 			else
 			{
-				pos = meio-1;
+				/*para evitar que pos fique -1*/
+				if(meio==0)
+					pos =0;
+				else
+					pos = meio-1;
 			}			
 		}
 	
-		/*palavra ja foi inserida*/
-		if(i==-1)
+		meio=(inf+pos)/2;
+		/*verifica se saiu porque achou a palavra, deve calcular o meio de novo, pq antes de sair do while
+		pode ter mudado o valor dos limites inf e pos */
+		if(strcmp(vetor[meio],palavra)==0)
 			return 0;
-		
 		else
 		{
-			
-			printf("Pos: %d %s\n" ,pos,palavra);
-			fflush(stdout);
+			/*se a palavra que achou no vetor eh lexicograficamente menor, deve-se inserir na frente*/
 			if(strcmp(vetor[pos],palavra)<0)
 				i = pos+1;
 			else
 				i = pos;
+			/*desloca os elementos*/
+			for(j=tamanho;j>i;--j)
+				strcpy(vetor[j],vetor[j-1]);
 
-			for(j=tamanho;j>=i;--j)
-				strcpy(vetor[j+1],vetor[j]);
+			/*insere o elemento*/
 			strcpy(vetor[i],palavra);
-
 
 		}
 	}
@@ -93,7 +88,6 @@ int main(int argc, char **argv)
 	FILE *p_texto;
 	long int p_texto_tam=0, t_vet_menor=0, t_vet_maior=0, i_menor=0, i_maior=0;
 	char *s_texto, **vetor_menor, **vetor_maior, *palavra_atual;
-	register long int i=0;
 	
 	/*Verifica se o argumento foi passado*/
 	if(argc < 2)
@@ -130,31 +124,38 @@ int main(int argc, char **argv)
 
 		if(strlen(palavra_atual) <= T_STR_MENOR) //inserir no vetor menor
 		{
-			if(i_menor+1 == t_vet_menor) //verificar se é já foram utilizadas todas as posiçoes do vetor
+			if(i_menor+2 == t_vet_menor) //verificar se é já foram utilizadas todas as posiçoes do vetor
 				realocaVetorString(&vetor_menor,&t_vet_menor,T_STR_MENOR);
 
-			//INSERIR ORDENADO AQUI
-			//strcpy(vetor_menor[i_menor++],palavra_atual);
-			printf("[%ld] %s\n",i_menor,palavra_atual);
 			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
 				i_menor++;
 			
 		}
 		else //inserir no vetor maior
 		{
-			if(i_maior+1 == t_vet_maior) //verificar se é já foram utilizadas todas as posiçoes do vetor
+			if(i_maior+2 == t_vet_maior) //verificar se é já foram utilizadas todas as posiçoes do vetor
 				realocaVetorString(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
 
-			//INSERIR ORDENADO AQUI
-			//strcpy(vetor_maior[i_maior++],palavra_atual);
 			if(insereOrdenado(vetor_maior,palavra_atual,i_maior))
 				i_maior++;
 		}
 
 		palavra_atual = strtok(NULL," ,-\n\r");
 	}
-
+	
 	printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
+	
+	/*	
+	//Imprime os vetores
+	int i;
+	for(i=0;i<i_menor;++i)
+		printf("Palavras menor: %s \n",vetor_menor[i]);		
+
+	for(i=0;i<i_maior;++i)
+		printf("Palavras menor: %s \n",vetor_maior[i]);	*/
+
+	
+		
 
 	return EXIT_SUCCESS	;
 }
