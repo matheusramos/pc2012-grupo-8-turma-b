@@ -5,8 +5,11 @@
 #include<mpi.h>
 
 /*
- *
- *
+ * Funcao que busca uma palavra no vetor de palavras menores.
+ * Se a palavra é encontrada, a variável achou passa a ser 1, e retorna-se a posicao
+ * dessa palavra no vetor. Se a palavra não for encontrada, achou tem valor 0, e retorna -
+ * se a posicao onde a busca parou, que é a posicao da palavra do vetor mais proxima da
+ * palavra desejada.
  */
 
 int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho, int *achou)
@@ -37,6 +40,7 @@ int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho, int *achou
 		}			
 	}
 	meio=(inf+pos)/2;
+	/*verifica-se se achou a palavra*/
 	if(strcmp(vetor[meio],palavra)==0)
 		(*achou)=1;
 
@@ -81,17 +85,63 @@ void geraPalavra (int id, long unsigned int *contAleat, char **vetor_menor, int 
 			break;	
 		}
 		
-		/*else VOU FAZER ISSO
+		else
 		{
-			//se a palavra da frente não apresenta a mesma estrutura, gerou 'abap', mas nao tem e tem //'abal', retira-se a ultima letra e tenta de novo
-			if(strncmp(vetor_menor[posicao],palavra,strlen(palavra))!=0 && )
-			{
-				palavra[tamanho-1]='\0';
-				--tamanho;
+			/*verifica se as palavras vizinhas apresentam a mesma estrutura.
+			Exemplo:  gerou 'fa', mas nao tem e tem 'far' como um dos vizinhos entao continua, 
+			senão retira-se a ultima letra e tenta de novo. 
 			
+			Com isso se gerarmos como primeira letra 'k' e não houver o 'k' e nenhuma 
+			palavra que comece com 'k', ele exclui essa letra e começa de novo*/
+
+			
+			//TODO: depois, em vez de olhar a posicao atual e os vizinhos diretos, tem que fazer
+			//uma funcao que pegue o primeiro vizinho da direita nao achado, e o primeiro vizinho da
+			//esquerda nao achado
+
+
+
+			/*verifica os dois vizinhos*/
+			if(posicao>0 && posicao+1<i_menor)
+			{
+				/* se nenhum vizinho apresenta a estrutura*/
+				if(strncmp(vetor_menor[posicao+1],palavra,strlen(palavra))!=0 &&
+					strncmp(vetor_menor[posicao-1],palavra,strlen(palavra))!=0 &&
+					strncmp(vetor_menor[posicao],palavra,strlen(palavra))!=0)
+				{
+					palavra[tamanho-1]='\0';
+					--tamanho;
+
+				}
+
+			}
+			/*verifica o valor e o vizinho da direita*/
+			else if(posicao==0)
+			{
+				if(strncmp(vetor_menor[posicao+1],palavra,strlen(palavra))!=0 &&
+					strncmp(vetor_menor[posicao],palavra,strlen(palavra))!=0)
+				{
+					palavra[tamanho-1]='\0';
+					--tamanho;
+
+				}
+
+			}
+			/*verifica o valor e o vizinho da esquerda*/
+			else
+			{
+				if(strncmp(vetor_menor[posicao-1],palavra,strlen(palavra))!=0 &&
+					strncmp(vetor_menor[posicao],palavra,strlen(palavra))!=0)
+				{
+					palavra[tamanho-1]='\0';
+					--tamanho;
+
+				}
+
+
 			}
 
-		}*/
+		}
 	}
 
 }
@@ -106,14 +156,14 @@ int main(int argc, char **argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
 	char *vetor[5];
-	vetor[0]="ab";
-	vetor[1]="fg";
-	vetor[2]="lm";
-	vetor[3]="ln";
-	vetor[4]="tv";
+	vetor[0]="carol";
+	vetor[1]="fabio";
+	vetor[2]="isa";
+	vetor[3]="tsu";
+	vetor[4]="vanes";
 		
 
-	for(i=1;i<5;++i)
+	for(i=0;i<8;++i)
 		geraPalavra(id,&contAleat,vetor,5);
 		
 
