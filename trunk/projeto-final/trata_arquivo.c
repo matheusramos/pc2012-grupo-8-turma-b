@@ -1,69 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
+#include"miscelanea.h"
 
-#define TAMANHO_ADICIONAL 100000
-#define T_STR_MENOR 5
-#define T_STR_MAIOR 30
-
-void alocarVetorString(char ***,long int *, int);
-void realocaVetorString(char ***,long int *,int);
-
-
-int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho)
+int insereOrdenado(registro *vetor, char *palavra, long int tamanho)
 {
-
-	int inf=0,pos=tamanho-1;
-	int meio=0;
-	int posicao=-1;
-	/*Faz a busca binaria para ver se existe a palavra*/
-	while(inf<pos)
-	{
-		meio=(inf+pos)/2;
-		int comp=strcmp(vetor[meio],palavra);
-
-		/*Achou a palavra deve sair*/
-		if(comp==0)
-			break;
-		else if (comp<0)
-			inf = meio+1;
-		else
-		{
-			/*para evitar que pos fique -1*/
-			if(meio==0)
-				pos =0;
-			else
-				pos = meio-1;
-		}			
-	}
-	meio=(inf+pos)/2;
-	if(strcmp(vetor[meio],palavra)==0)
-		posicao = meio;
-
-	return posicao;
-}
-
-int insereOrdenado(char **vetor, char *palavra, long int tamanho)
-{
-	long int i=0,j;
-	
-	
-	/*	
-	//INSERTION SORT
-	while(i<tamanho && strcmp(vetor[i],palavra)<0)
-		++i;
-	
-	if(strcmp(vetor[i],palavra)==0)
-		return 0;
-	else
-		for(j=tamanho;j>i;--j)
-			strcpy(vetor[j],vetor[j-1]);
-		strcpy(vetor[i],palavra); */
-	
+	long int i=0,j=0;
 	
 	/*Primeira posicao do vetor*/
 	if(tamanho==0)
-		strcpy(vetor[0],palavra);
+		strcpy(vetor[0].palavra,palavra);
 		
 	else
 	{	
@@ -74,7 +21,7 @@ int insereOrdenado(char **vetor, char *palavra, long int tamanho)
 		while(inf<pos)
 		{
 			meio=(inf+pos)/2;
-			int comp=strcmp(vetor[meio],palavra);
+			int comp=strcmp(vetor[meio].palavra,palavra);
 
 			/*Achou a palavra deve sair*/
 			if(comp==0)
@@ -94,21 +41,21 @@ int insereOrdenado(char **vetor, char *palavra, long int tamanho)
 		meio=(inf+pos)/2;
 		/*verifica se saiu porque achou a palavra, deve calcular o meio de novo, pq antes de sair do while
 		pode ter mudado o valor dos limites inf e pos */
-		if(strcmp(vetor[meio],palavra)==0)
+		if(strcmp(vetor[meio].palavra,palavra)==0)
 			return 0;
 		else
 		{
 			/*se a palavra que achou no vetor eh lexicograficamente menor, deve-se inserir na frente*/
-			if(strcmp(vetor[pos],palavra)<0)
+			if(strcmp(vetor[pos].palavra,palavra)<0)
 				i = pos+1;
 			else
 				i = pos;
 			/*desloca os elementos*/
 			for(j=tamanho;j>i;--j)
-				strcpy(vetor[j],vetor[j-1]);
+				strcpy(vetor[j].palavra,vetor[j-1].palavra);
 
 			/*insere o elemento*/
-			strcpy(vetor[i],palavra);
+			strcpy(vetor[i].palavra,palavra);
 
 		}
 	}
@@ -120,8 +67,9 @@ int main(int argc, char **argv)
 {
 	FILE *p_texto;
 	long int p_texto_tam=0, t_vet_menor=0, t_vet_maior=0, i_menor=0, i_maior=0;
-	char *s_texto, **vetor_menor, **vetor_maior, *palavra_atual;
-	
+	registro *vetor_menor, *vetor_maior;
+	char *s_texto, *palavra_atual;
+
 	/*Verifica se o argumento foi passado*/
 	if(argc < 2)
 	{
@@ -146,19 +94,23 @@ int main(int argc, char **argv)
 	fgets(s_texto,p_texto_tam,p_texto); //copia o texto do arquivo para a string -> [TESTADO] copia o texto na íntegra
 
 	fclose(p_texto); /*Fecha o arquivo que não será mais utilizado*/
-
-	alocarVetorString(&vetor_menor,&t_vet_menor,T_STR_MENOR); //aloca vetor menor
-	alocarVetorString(&vetor_maior,&t_vet_maior,T_STR_MAIOR); // aloca vetor maior
+	
+	t_vet_menor = TAMANHO_ADICIONAL;
+	t_vet_maior = TAMANHO_ADICIONAL;
+	alocarVetorRegistro(&vetor_menor,&t_vet_menor,T_STR_MENOR); //aloca vetor menor
+	alocarVetorRegistro(&vetor_maior,&t_vet_maior,T_STR_MAIOR); // aloca vetor maior
 
 	/*Separa as palavras no vetor maior ou menor*/
 	palavra_atual = strtok(s_texto," ,-\n\r");
+
 	while(palavra_atual != NULL)
 	{
+		strToLower(palavra_atual);
 
 		if(strlen(palavra_atual) <= T_STR_MENOR) //inserir no vetor menor
 		{
 			if(i_menor+2 == t_vet_menor) //verificar se é já foram utilizadas todas as posiçoes do vetor
-				realocaVetorString(&vetor_menor,&t_vet_menor,T_STR_MENOR);
+				realocarVetorRegistro(&vetor_menor,&t_vet_menor,T_STR_MENOR);
 
 			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
 				i_menor++;
@@ -167,7 +119,7 @@ int main(int argc, char **argv)
 		else //inserir no vetor maior
 		{
 			if(i_maior+2 == t_vet_maior) //verificar se é já foram utilizadas todas as posiçoes do vetor
-				realocaVetorString(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
+				realocarVetorRegistro(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
 
 			if(insereOrdenado(vetor_maior,palavra_atual,i_maior))
 				i_maior++;
@@ -175,54 +127,12 @@ int main(int argc, char **argv)
 
 		palavra_atual = strtok(NULL," ,-\n\r");
 	}
-	
-	printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
-	
-	/*	
-	//Imprime os vetores
-	int i;
-	for(i=0;i<i_menor;++i)
-		printf("Palavras menor: %s \n",vetor_menor[i]);		
 
-	for(i=0;i<i_maior;++i)
-		printf("Palavras menor: %s \n",vetor_maior[i]);	*/
+	gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
+	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");
+	//recuperarVetorRegistro(&vetor_teste,&tamanho_teste,T_STR_MENOR,"menor.dat");
+	//imprimirVetorRegistro(vetor_teste,tamanho_teste);
+	//printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
 
-	return EXIT_SUCCESS	;
-}
-
-/**
- * Alocar o vetor de strings.
- *
- * @param ***vetor: endereco do vetor de strings
- * @param *tamanho: o endereco do tamanho que deve ser igual a 0 do vetor de strings
- * @param tamanho_string: o tamanho das novas strings que serão alocadas
- */
-void alocarVetorString(char ***vetor,long int *tamanho, int tamanho_string)
-{
-	register long int i=0;
-	*tamanho += TAMANHO_ADICIONAL;
-	*vetor = (char **) malloc((*tamanho)*sizeof(char *));
-	for(i=0; i<*tamanho; i++)
-		(*vetor)[i] = (char *) malloc((tamanho_string+1)*sizeof(char));
-}
-
-/**
- * Realocar o vetor de strings para um novo tamanho, caso o tamanho antigo não seja suficiente.
- *
- * @param ***vetor: endereco do vetor de strings
- * @param *tamanho: o endereco tamanho antigo do vetor de strings
- * @param tamanho_string: o tamanho das novas strings que serão alocadas
- */
-void realocaVetorString(char ***vetor,long int *tamanho, int tamanho_string)
-{
-	register long int i=0;
-	long int ultima_posicao;
-	ultima_posicao = *tamanho;
-
-	*tamanho += TAMANHO_ADICIONAL;
-
-	*vetor = (char **) realloc (*vetor,(*tamanho)*sizeof(char *));
-
-	for(i=ultima_posicao; i<*tamanho; i++)
-		(*vetor)[i] = (char *) malloc((tamanho_string+1)*sizeof(char));
+	return EXIT_SUCCESS;
 }
