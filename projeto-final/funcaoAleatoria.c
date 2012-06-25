@@ -12,11 +12,9 @@
  * palavra desejada.
  */
 
-int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho, int *achou)
+int buscarPalavraMenor (char **vetor, char *palavra, long int tamanho, int *achou)
 {
-
-	int inf=0,pos=tamanho-1;
-	int meio=0;
+	int inf=0, pos=tamanho-1, meio=0;
 	(*achou)=0;
 
 	/*Faz a busca binaria para ver se existe a palavra*/
@@ -47,20 +45,17 @@ int buscaPalavraMenor (char **vetor, char *palavra, long int tamanho, int *achou
 	return meio;
 }
 
-char geraCaracter (int id, int contAleat)
+char gerarCaractere (int id, int contAleat)
 {
-
 	unsigned int i=time(NULL);
 	unsigned int iProc;	
 
 	iProc = i*(id+1)*(contAleat+1);
 	
 	return rand_r(&iProc)%26+97;
-	
-
 }
 
-void geraPalavra (int id, long unsigned int *contAleat, char **vetor_menor, int i_menor)
+void gerarPalavra (int id, long unsigned int *contAleat, char **vetor_menor, int i_menor)
 {	
 	char *palavra= malloc(6*sizeof(char));
 	char caracter;
@@ -70,14 +65,14 @@ void geraPalavra (int id, long unsigned int *contAleat, char **vetor_menor, int 
 
 	while(tamanho<5)
 	{
-		caracter = geraCaracter(id,*contAleat);
+		caracter = gerarCaractere(id,*contAleat);
 		(*contAleat)++;
 		palavra[tamanho]=caracter;
 		palavra[tamanho+1]='\0';
 		++tamanho;
 		printf("%s\n",palavra);
 		
-		posicao = buscaPalavraMenor(vetor_menor,palavra,i_menor,&achou);
+		posicao = buscarPalavraMenor(vetor_menor,palavra,i_menor,&achou);
 		if(achou==1)
 		{
 			printf("Achouuuuu");
@@ -164,7 +159,7 @@ int main(int argc, char **argv)
 		
 
 	for(i=0;i<8;++i)
-		geraPalavra(id,&contAleat,vetor,5);
+		gerarPalavra(id,&contAleat,vetor,5);
 		
 
 	MPI_Finalize();

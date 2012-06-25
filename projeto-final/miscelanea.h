@@ -12,10 +12,14 @@ struct
 }typedef registro;
 
 void alocarVetorRegistro(registro **,long int *,int);
+void desalocarVetorRegistro(registro **,int);
 void realocarVetorRegistro(registro **,long int *,int);
 void strToLower(char *);
 void gravarVetorRegistro(registro *,long int,char *);
 void recuperarVetorRegistro(registro **,long int *,int,char *);
 void imprimirVetorRegistro(registro *, long int);
+void gerarPalavra(int,long unsigned int *,registro *,int);
+char gerarCaractere(int,unsigned long int);
+int buscarPalavraMenor(registro *,char *,long int,short int *);
 
 #endif

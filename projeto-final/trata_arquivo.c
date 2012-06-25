@@ -51,7 +51,7 @@ int insereOrdenado(registro *vetor, char *palavra, long int tamanho)
 			else
 				i = pos;
 			/*desloca os elementos*/
-			for(j=tamanho;j>i;--j)
+			for(j=tamanho;j>i;j--)
 				strcpy(vetor[j].palavra,vetor[j-1].palavra);
 
 			/*insere o elemento*/
@@ -69,6 +69,9 @@ int main(int argc, char **argv)
 	long int p_texto_tam=0, t_vet_menor=0, t_vet_maior=0, i_menor=0, i_maior=0;
 	registro *vetor_menor, *vetor_maior;
 	char *s_texto, *palavra_atual;
+
+	registro *registro_teste;
+	long int tamanho_teste=0;
 
 	/*Verifica se o argumento foi passado*/
 	if(argc < 2)
@@ -110,7 +113,11 @@ int main(int argc, char **argv)
 		if(strlen(palavra_atual) <= T_STR_MENOR) //inserir no vetor menor
 		{
 			if(i_menor+2 == t_vet_menor) //verificar se é já foram utilizadas todas as posiçoes do vetor
+			{
 				realocarVetorRegistro(&vetor_menor,&t_vet_menor,T_STR_MENOR);
+				printf("Tamanho menor %ld\n",t_vet_menor);
+				fflush(stdout);
+			}
 
 			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
 				i_menor++;
@@ -119,7 +126,12 @@ int main(int argc, char **argv)
 		else //inserir no vetor maior
 		{
 			if(i_maior+2 == t_vet_maior) //verificar se é já foram utilizadas todas as posiçoes do vetor
+			{
 				realocarVetorRegistro(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
+				printf("Tamanho maior %ld\n",t_vet_maior);
+				fflush(stdout);
+			}
+
 
 			if(insereOrdenado(vetor_maior,palavra_atual,i_maior))
 				i_maior++;
@@ -128,11 +140,22 @@ int main(int argc, char **argv)
 		palavra_atual = strtok(NULL," ,-\n\r");
 	}
 
-	gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
-	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");
-	//recuperarVetorRegistro(&vetor_teste,&tamanho_teste,T_STR_MENOR,"menor.dat");
-	//imprimirVetorRegistro(vetor_teste,tamanho_teste);
-	//printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
+	/*gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
+	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");*/
+	
+	desalocarVetorRegistro(&vetor_menor,t_vet_menor);
+	desalocarVetorRegistro(&vetor_maior,t_vet_maior);
 
+	/*recuperarVetorRegistro(&registro_teste,&tamanho_teste,T_STR_MENOR,"menor.dat");
+	imprimirVetorRegistro(registro_teste,tamanho_teste);
+	desalocarVetorRegistro(&registro_teste,tamanho_teste);
+*/
+	/*recuperarVetorRegistro(&registro_teste,&tamanho_teste,T_STR_MAIOR,"maior.dat");
+	imprimirVetorRegistro(registro_teste,tamanho_teste);
+	*/
+	//desalocarVetorRegistro(&registro_teste,tamanho_teste);
+	
+	//printf("Palavras menor: %ld - Palavras maior: %ld\n",i_menor,i_maior);
+	free(s_texto);
 	return EXIT_SUCCESS;
 }
