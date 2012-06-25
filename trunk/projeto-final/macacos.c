@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	recuperarVetorRegistro(&menor,&t_menor,T_STR_MENOR,"menor.dat");
 	recuperarVetorRegistro(&maior,&t_maior,T_STR_MAIOR,"maior.dat");
 
-	imprimirVetorRegistro(menor, t_menor);
+	//imprimirVetorRegistro(menor, t_menor);
 
 	palavra = (char *) malloc((T_STR_MENOR+1)*sizeof(char)); //só tem o tamanho da palavra menor, que vão ser o tamanho máximo gerado.
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 			if (posicao > 0 && posicao+1 < t_menor)
 			{
 				/* se nenhum vizinho apresenta a estrutura*/
-				if (strncmp(menor[posicao+1].palavra,palavra,strlen(palavra)) != 0 &&
+			if (strncmp(menor[posicao+1].palavra,palavra,strlen(palavra)) != 0 &&
 						strncmp(menor[posicao-1].palavra,palavra,strlen(palavra)) != 0 &&
 						strncmp(menor[posicao].palavra,palavra,strlen(palavra)) != 0)
 					palavra[--t_palavra]='\0';

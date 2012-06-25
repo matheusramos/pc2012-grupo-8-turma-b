@@ -4,7 +4,7 @@
 #include<ctype.h>
 #include"miscelanea.h"
 
-int insereOrdenado(registro *vetor, char *palavra, long int tamanho)
+int inserirOrdenado(registro *vetor, char *palavra, long int tamanho)
 {
 	long int i=0,j=0;
 	
@@ -113,35 +113,25 @@ int main(int argc, char **argv)
 		if(strlen(palavra_atual) <= T_STR_MENOR) //inserir no vetor menor
 		{
 			if(i_menor+2 == t_vet_menor) //verificar se é já foram utilizadas todas as posiçoes do vetor
-			{
 				realocarVetorRegistro(&vetor_menor,&t_vet_menor,T_STR_MENOR);
-				printf("Tamanho menor %ld\n",t_vet_menor);
-				fflush(stdout);
-			}
 
-			if(insereOrdenado(vetor_menor,palavra_atual,i_menor))
+			if(inserirOrdenado(vetor_menor,palavra_atual,i_menor))
 				i_menor++;
-			
 		}
 		else //inserir no vetor maior
 		{
 			if(i_maior+2 == t_vet_maior) //verificar se é já foram utilizadas todas as posiçoes do vetor
-			{
 				realocarVetorRegistro(&vetor_maior,&t_vet_maior,T_STR_MAIOR);
-				printf("Tamanho maior %ld\n",t_vet_maior);
-				fflush(stdout);
-			}
 
-
-			if(insereOrdenado(vetor_maior,palavra_atual,i_maior))
+			if(inserirOrdenado(vetor_maior,palavra_atual,i_maior))
 				i_maior++;
 		}
 
 		palavra_atual = strtok(NULL," ,-\n\r");
 	}
 
-	/*gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
-	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");*/
+	gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
+	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");
 	
 	desalocarVetorRegistro(&vetor_menor,t_vet_menor);
 	desalocarVetorRegistro(&vetor_maior,t_vet_maior);
