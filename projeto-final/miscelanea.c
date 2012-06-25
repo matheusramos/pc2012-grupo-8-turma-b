@@ -18,7 +18,6 @@ void alocarVetorRegistro(registro **vetor,long int *tamanho, int tamanho_string)
 	*vetor = (registro *) malloc((*tamanho)*sizeof(registro));
 	for(i=0; i<*tamanho; i++)
 	{
-		(*vetor)[i].palavra = (char *) malloc((tamanho_string+1)*sizeof(char));
 		(*vetor)[i].palavra[0] = '\0';
 		(*vetor)[i].flag_achado = 0;
 	}
@@ -43,16 +42,13 @@ void realocarVetorRegistro(registro **vetor,long int *tamanho, int tamanho_strin
 
 	for(i=ultima_posicao; i<*tamanho; i++)
 	{
-		(*vetor)[i].palavra = (char *) malloc((tamanho_string+1)*sizeof(char));
+		(*vetor)[i].palavra[0] = '\0';
 		(*vetor)[i].flag_achado = 0;
 	}
 }
 
 void desalocarVetorRegistro(registro **vetor, int tamanho)
 {
-	register long int i=0;
-	for(i=0; i<tamanho; i++)
-		free((*vetor)[i].palavra);
 	free(*vetor);
 }
 
@@ -101,7 +97,6 @@ void gravarVetorRegistro(registro *vetor,long int tamanho, char *nome)
 void recuperarVetorRegistro(registro **vetor, long int *tamanho, int tamanho_string, char *nome)
 {
 	FILE *p;
-	long int itens_lidos=0;
 	p = fopen(nome,"rb");
 
 	if (p == NULL)
@@ -112,9 +107,7 @@ void recuperarVetorRegistro(registro **vetor, long int *tamanho, int tamanho_str
 
 	fread(tamanho,1,sizeof(long int),p);
 	alocarVetorRegistro(vetor,tamanho,tamanho_string);
-	itens_lidos = fread(*vetor,*tamanho,sizeof(registro),p); //escrever o vetor no arquivo
-	perror("Erro ocorrido");
-	fflush(stdout);
+	fread(*vetor,*tamanho,sizeof(registro),p); //escrever o vetor no arquivo
 	fclose(p);
 }
 

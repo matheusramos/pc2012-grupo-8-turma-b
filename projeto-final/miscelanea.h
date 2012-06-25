@@ -3,11 +3,11 @@
 
 #define TAMANHO_ADICIONAL 100000
 #define T_STR_MENOR 5
-#define T_STR_MAIOR 30
+#define T_STR_MAIOR 100
 
 struct
 {
-	char *palavra;
+	char palavra[T_STR_MAIOR];
 	int flag_achado;
 }typedef registro;
 
