@@ -1,4 +1,4 @@
-all: trata_arquivo macacos teste_recuperacao
+all: trata_arquivo macacos 
 
 CC = gcc
 MPICC = mpicc
@@ -13,17 +13,11 @@ miscelanea.o: miscelanea.c miscelanea.h
 macacos.o: macacos.c miscelanea.h
 	$(CC) $(C_FLAGS) -c macacos.c
 
-teste_recuperacao.o: teste_recuperacao.c miscelanea.h
-	$(CC) $(C_FLAGS) -c teste_recuperacao.c
-
 trata_arquivo: trata_arquivo.o miscelanea.o
 	$(CC) $(C_FLAGS) trata_arquivo.o miscelanea.o -o trata_arquivo
 
 macacos: macacos.o miscelanea.o
 	$(CC) $(C_FLAGS) macacos.o miscelanea.o -o macacos
-
-teste_recuperacao: teste_recuperacao.o
-	$(CC) $(C_FLAGS) teste_recuperacao.o miscelanea.o -o teste_recuperacao
 
 clean:
 	rm *.o trata_arquivo macacos

@@ -70,8 +70,8 @@ int main(int argc, char **argv)
 	registro *vetor_menor, *vetor_maior;
 	char *s_texto, *palavra_atual;
 
-	registro *registro_teste;
-	long int tamanho_teste=0;
+	/*registro *registro_teste;
+	long int tamanho_teste=0;*/
 
 	/*Verifica se o argumento foi passado*/
 	if(argc < 2)
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	alocarVetorRegistro(&vetor_maior,&t_vet_maior,T_STR_MAIOR); // aloca vetor maior
 
 	/*Separa as palavras no vetor maior ou menor*/
-	palavra_atual = strtok(s_texto," ,-\n\r");
+	palavra_atual = strtok(s_texto," $',-\n\r0123456789");
 
 	while(palavra_atual != NULL)
 	{
@@ -127,11 +127,13 @@ int main(int argc, char **argv)
 				i_maior++;
 		}
 
-		palavra_atual = strtok(NULL," ,-\n\r");
+		palavra_atual = strtok(NULL," $',-\n\r0123456789");
 	}
 
 	gravarVetorRegistro(vetor_menor,i_menor,"menor.dat");
 	gravarVetorRegistro(vetor_maior,i_maior,"maior.dat");
+
+	//imprimirVetorRegistro(vetor_maior,i_maior);
 	
 	desalocarVetorRegistro(&vetor_menor,t_vet_menor);
 	desalocarVetorRegistro(&vetor_maior,t_vet_maior);
