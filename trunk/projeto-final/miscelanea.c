@@ -138,6 +138,8 @@ int buscarPalavraMenor (registro *registro, char *palavra, long int tamanho, sho
 {
 	int inf=0, pos=tamanho-1, meio=0;
 
+	if (tamanho == 0) return -1; //vetor vazio
+
 	*achou = 0;
 
 	/*Faz a busca binaria para ver se existe a palavra*/
@@ -163,7 +165,7 @@ int buscarPalavraMenor (registro *registro, char *palavra, long int tamanho, sho
 	meio=(inf+pos)/2;
 
 	/*verifica-se se achou a palavra*/
-	if (strcmp(registro[meio].palavra,palavra)==0)
+	if (strcmp(registro[meio].palavra,palavra)==0 && !registro[meio].flag_achado) //verifica se achou a palavra
 		*achou = 1;
 
 	return meio;
