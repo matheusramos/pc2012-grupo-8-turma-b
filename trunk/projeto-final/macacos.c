@@ -168,8 +168,8 @@ int main(int argc, char **argv)
 				//PROCURA NO VETOR MAIOR
 				buscarVetorMaior(maior,t_maior,palavra,&cont_maior);
 			}
-		while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
-			palavra[--t_palavra] = '\0';
+			while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
+				palavra[--t_palavra] = '\0';
 
 		}
 		else
