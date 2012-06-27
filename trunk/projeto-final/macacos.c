@@ -13,7 +13,6 @@
  * @param t_vetor: tamanho do vetor
  * @param posicao: posicao atual do vetor
  * @param *palavra: strin contendo a palavra gerada.
- * @param achado: se a palavra contida em na posicao foi encontrada nesta iteração
  *
  * @return: 1 se deve ser realizado o backtracking, 0 caso contrário.
  */
@@ -33,7 +32,7 @@ int indicarBacktracking(registro *vetor, int t_vetor, int posicao, char *palavra
 		anterior = -1;
 
 		proximo = posicao+1;
-		while(vetor[proximo].flag_achado == 1 && proximo++ < t_vetor); //varre os proximos para achar a proxima posicao ainda não encontrada
+		while(vetor[proximo].flag_achado == 1 && proximo++ < t_vetor-1); //varre os proximos para achar a proxima posicao ainda não encontrada
 		if(vetor[proximo].flag_achado == 1)
 			proximo = -1;
 	}
@@ -54,7 +53,7 @@ int indicarBacktracking(registro *vetor, int t_vetor, int posicao, char *palavra
 			anterior = -1;
 
 		proximo = posicao+1;
-		while(vetor[proximo].flag_achado == 1 && proximo++ < t_vetor); //varre os proximos para achar a proxima posicao ainda não encontrada
+		while(vetor[proximo].flag_achado == 1 && proximo++ < t_vetor-1); //varre os proximos para achar a proxima posicao ainda não encontrada
 		if(vetor[proximo].flag_achado == 1)
 			proximo = -1;
 	}
@@ -133,7 +132,6 @@ int main(int argc, char **argv)
 	char *palavra;
 	short int t_palavra=0, flag_achou=0;
 	unsigned long int conta_aleat =1;/* Variavel criada para que o processo nao gere a mesma letra aleatoria dentro do intervalo de tempo de segundo*/ 
-	int id=0, p=0; 
 
 	/*MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
@@ -146,7 +144,7 @@ int main(int argc, char **argv)
 	
 	while(cont_menor < t_menor)
 	{
-		palavra[t_palavra++] = gerarCaractere(id,conta_aleat++); //gera caractere aleatório
+		palavra[t_palavra++] = gerarCaractere(0,conta_aleat++); //gera caractere aleatório
 		palavra[t_palavra] = '\0'; //marca o fim da string
 
 		//printf("%s",palavra);
@@ -168,14 +166,20 @@ int main(int argc, char **argv)
 				//PROCURA NO VETOR MAIOR
 				buscarVetorMaior(maior,t_maior,palavra,&cont_maior);
 			}
-			while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
-				palavra[--t_palavra] = '\0';
+			//while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
+				//palavra[--t_palavra] = '\0';
 
 		}
-		else
-		if(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
-			palavra[--t_palavra] = '\0';
+		//else
+		//if(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking
+			//palavra[--t_palavra] = '\0';
 
+		while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking, feito com while pq somente com um if pedira causar a entrada de um nó em loop infinito, caso algum outro nó encontrasse uma palavra que estava para ser encontrada no nó atual. Ele faz o backtracking várias vezes até chegar aoponto que existe ainda alguma palavra que ele possa encontrar.
+		{
+			palavra[--t_palavra] = '\0';
+			posicao = buscarPalavraMenor(menor,palavra,t_menor,&flag_achou);
+			printf("BACKTRACKING - NOVA PALAVRA: %s POSICAO: %ld\n",palavra,posicao);
+		}
 	}
 
 	printf("%ld de %ld palavras pequenas encontradas\n",cont_menor,t_menor);
