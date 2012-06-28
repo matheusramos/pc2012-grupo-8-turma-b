@@ -22,7 +22,7 @@ echo "------------------------------------------------" >> teste2_par.txt
 echo "Teste para 8 hosts, 8 processos" >> teste2_par.txt
 #for (( j = 0 ; j < 6; j++ ))
 #do
-	(time mpirun -np 8 --host wolverine,magneto,hulk,colossus,tempestade,demolidor,venon,vampira macacos_par) 2>>  teste2_teste2_par.txt
+	(time mpirun -np 8 --host wolverine,magneto,hulk,colossus,tempestade,demolidor,venon,vampira macacos_par) 2>>  teste2_par.txt
 #done
 echo "------------------------------------------------" >> teste2_par.txt
 echo "Teste para 8 hosts, 16 processos" >> teste2_par.txt
