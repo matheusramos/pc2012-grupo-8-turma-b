@@ -74,6 +74,26 @@ int indicarBacktracking(registro *vetor, int t_vetor, int posicao, char *palavra
 }
 
 /**
+ * Envia a posicao achada para todos os nós que estão executando.
+ *
+ * @param id: id do processo atual.
+ * @param numproc: número total de processos.
+ * @param numvetor: flag indicando se a palavra achada foi no VETOR MENOR ou no MAIOR.
+ * @param posicao: posição da palavra encontrada.
+ *
+ */
+void enviarAchadoGalera(int id, int numproc, int numvetor, long int posicao)
+{
+	register long int i=0;
+	long int mensagem[2]; //SUPER IMPORTANTE!!!! A PRIMEIRA POSICAO DEFINE SE O DADO É DO VETOR MENOR OU DO MAIOR(0->MENOR 1->MAIOR), A SEGUNDA POSICAO É A POSICAO DA PALAVRA NO VETOR
+
+	mensagem[0]=numvetor, mensagem[1]=posicao;
+	for(i=0; i<numproc; i++) //envia o comunicado para todos os processos
+		if(i != id) //só não envia pra si mesmo
+			MPI_Send(&mensagem,2,MPI_LONG,i,0,MPI_COMM_WORLD);
+}
+
+/**
  * Faz uma busca sequêncial no vetor maior, para a partir de UMA palavra gerada, identificar UMA OU MAIS palavras maiores. 
  * OBS: Esse algoritmo destrói o conteúdo das palavras maiores, ou seja, pode não ser possível imprimi-las da maneira correta.
  * TODO: Adicionar OpenMP.
@@ -81,13 +101,15 @@ int indicarBacktracking(registro *vetor, int t_vetor, int posicao, char *palavra
  * @param *vetor: ponteiro para o vetor de registros.
  * @param t_vetor: tamanho do vetor de registros.
  * @param *palavra: palavra gerada.
+ * @param id: id do processo atual.
+ * @param numproc: número de palavras.
  *
  * @return: a posicão que a palavra foi encontrada, -1 caso contrário.
  */
-void buscarVetorMaior(registro *vetor, int t_vetor, char *palavra, long int *contador)
+void buscarVetorMaior(registro *vetor, int t_vetor, char *palavra, long int *contador, int id, int numproc)
 {
 	register long int i=0;
-	register int j=0;
+	register int j=0;	
 	int t_palavra = strlen(palavra);
 	char *pos=NULL;
 
@@ -115,7 +137,9 @@ void buscarVetorMaior(registro *vetor, int t_vetor, char *palavra, long int *con
 			{
 				(*contador)++;
 				vetor[i].flag_achado = 1;
-				//TODO AVISAR OS OUTRAS THREADS
+
+				//Envia a mensagem para os outros nós
+				enviarAchadoGalera(id,numproc,VETOR_MAIOR,i);
 			}
 		}
 	}
@@ -128,30 +152,48 @@ int main(int argc, char **argv)
 	char *palavra;
 	short int t_palavra=0, flag_achou=0;
 	unsigned long int conta_aleat =1;/* Variavel criada para que o processo nao gere a mesma letra aleatoria dentro do intervalo de tempo de segundo*/ 
-	int id=0, p=0, i_porcentagem=1;
+	int id=0, p=0, i_porcentagem=1, flag_recebimento=10;
+	time_t time_inicial=0, time_final=0;
+	long int mensagem[2];
+	MPI_Status status;
+	MPI_Request request;
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 
-	if(id == 0) //PROCESSO QUE VAI APENAS CONTABILIZAR A QUANTIDADE DE PALAVRAS GERADAS E IMPRIMIR OS RESULTADOS NA TELA
+	recuperarVetorRegistro(&menor,&t_menor,T_STR_MENOR,"menor.dat");
+	recuperarVetorRegistro(&maior,&t_maior,T_STR_MAIOR,"maior.dat");
+	palavra = (char *) malloc((T_STR_MENOR+1)*sizeof(char)); //só tem o tamanho da palavra menor, que vão ser o tamanho máximo gerado.
+	MPI_Request_free(&request);
+	
+	time_inicial = time(NULL);
+	
+	while(cont_menor < t_menor)
 	{
-		MPI_Recv(calculado,(posFim-posIni+1),MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
-		MPI_Bcast(&posicao,1,MPI_LONG,1,MPI_COMM_WORLD);
-		conta_menor++;
-
-		if((t_menor*(0.1*i_porcentagem) == conta_menor)
-			printf("%d\% X minutos\n",i_porcentagem);
-	}
-	else
-	{
-		recuperarVetorRegistro(&menor,&t_menor,T_STR_MENOR,"menor.dat");
-		recuperarVetorRegistro(&maior,&t_maior,T_STR_MAIOR,"maior.dat");
-
-		palavra = (char *) malloc((T_STR_MENOR+1)*sizeof(char)); //só tem o tamanho da palavra menor, que vão ser o tamanho máximo gerado.
-		
-		while(cont_menor < t_menor)
+		if(id == 0) //PROCESSO QUE VAI APENAS CONTABILIZAR A QUANTIDADE DE PALAVRAS GERADAS E IMPRIMIR OS RESULTADOS NA TELA
 		{
+			MPI_Recv(&mensagem,2,MPI_LONG,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
+			//MPI_Bcast(&posicao,1,MPI_LONG,1,MPI_COMM_WORLD);
+			
+			//printf("Recebida a posição %ld\n",mensagem[1]);
+			//fflush(stdout);
+			if(mensagem[0] == VETOR_MENOR) //é o vetor menor
+				cont_menor++;
+			else
+				cont_maior++;
+			
+			if(((t_menor+t_maior)/100)*i_porcentagem == (cont_menor+cont_maior)) //imprime a porcentagem de 1 em 1
+			{
+				time_final = time(NULL);
+				printf("%d%% em %ld segundos\n",i_porcentagem,time_final-time_inicial);
+				//fflush(stdout);
+				i_porcentagem++;
+			}
+		}
+		else
+		{
+
 			palavra[t_palavra++] = gerarCaractere(id,conta_aleat++); //gera caractere aleatório
 			palavra[t_palavra] = '\0'; //marca o fim da string
 
@@ -162,26 +204,46 @@ int main(int argc, char **argv)
 				cont_menor++;
 				menor[posicao].flag_achado = 1;
 
-				MPI_Bcast(&posicao,1,MPI_LONG,id,MPI_COMM_WORLD);
+				//MPI_Bcast(&posicao,1,MPI_LONG,id,MPI_COMM_WORLD);
+				enviarAchadoGalera(id,p,VETOR_MENOR,posicao);//Envia a mensagem para os outros nós 
 
 				if (t_palavra > 1) //só procura no vetor de maiores se o length for maior do que 1
 				{
 					//PROCURA NO VETOR MAIOR -- SE ACHAR VAI COMUNICAR OS OUTROS PROCESSOS LÁ DENTRO
-					buscarVetorMaior(maior,t_maior,palavra,&cont_maior);
+					buscarVetorMaior(maior,t_maior,palavra,&cont_maior,id,p);
 				}
 			}
+			
+			/*MPI_Irecv(&mensagem,2,MPI_LONG,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,request);
+			if(request != NULL)
+			{
+				if (mensagem[0] == VETOR_MENOR)
+					menor[mensagem[1]].flag_achado = 1;
+				else
+					maior[mensagem[1]].flag_achado = 1;
+				MPI_Request_free(request);
+				request = NULL;
+			}
+			else
+			{
+				printf("Não tinha nada para receber quando eu tinha %ld palavras, daí eu continuei",cont_menor+cont_maior);
+			}*/
+			MPI_Request_get_status(request,&flag_recebimento,&status);
+			printf("O status devolvido foi %d\n",flag_recebimento);
+
 
 			while(indicarBacktracking(menor,t_menor,posicao,palavra)) //retorna até o ponto que é válido fazer o backtracking, feito com while pq somente com um if pedira causar a entrada de um nó em loop infinito, caso algum outro nó encontrasse uma palavra que estava para ser encontrada no nó atual. Ele faz o backtracking várias vezes até chegar aoponto que existe ainda alguma palavra que ele possa encontrar.
 			{
 				palavra[--t_palavra] = '\0';
 				posicao = buscarPalavraMenor(menor,palavra,t_menor,&flag_achou);
-				printf("BACKTRACKING - NOVA PALAVRA: %s POSICAO: %ld\n",palavra,posicao);
 			}
 		}
 	}
 
-	printf("%ld de %ld palavras pequenas encontradas\n",cont_menor,t_menor);
-	printf("%ld de %ld palavras grandes encontradas\n",cont_maior,t_maior);
+	printf("%ld de %ld (%f%%) palavras pequenas encontradas\n",cont_menor,t_menor,((float) cont_menor/t_menor)*100);
+	printf("%ld de %ld (%f%%) palavras grandes encontradas\n",cont_maior,t_maior,((float) cont_maior/t_maior)*100);
+	printf("%ld de %ld (%f%%) palavras totais encontradas\n",cont_menor+cont_maior,t_menor+t_maior,(((float) (cont_menor+cont_maior)/(t_menor+t_maior))*100));
+
 	free(palavra);
 	desalocarVetorRegistro(&menor,t_menor);
 	desalocarVetorRegistro(&maior,t_maior);
@@ -190,4 +252,3 @@ int main(int argc, char **argv)
 	
 	return EXIT_SUCCESS;
 }
-
