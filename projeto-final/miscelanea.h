@@ -5,6 +5,8 @@
 #define T_STR_MENOR 5
 #define T_STR_MAIOR 100
 #define SEPARADOR '%'
+#define VETOR_MENOR 0
+#define VETOR_MAIOR 1
 
 struct
 {
