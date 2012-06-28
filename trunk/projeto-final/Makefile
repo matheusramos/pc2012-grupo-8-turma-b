@@ -1,8 +1,8 @@
 all: trata_arquivo macacos macacos_par macacos_par2 macacos_par3
 
-CC = gcc
+CC = gcc-4.2
 MPICC = mpicc
-C_FLAGS = -g -Wall -fopenmp
+C_FLAGS = -g -fopenmp -Wall
 
 trata_arquivo.o: trata_arquivo.c miscelanea.h
 	$(CC) $(C_FLAGS) -c trata_arquivo.c
