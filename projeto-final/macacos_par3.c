@@ -96,7 +96,6 @@ void enviarAchadoGalera(int id, int numproc, int numvetor, long int posicao)
 /**
  * Faz uma busca sequêncial no vetor maior, para a partir de UMA palavra gerada, identificar UMA OU MAIS palavras maiores. 
  * OBS: Esse algoritmo destrói o conteúdo das palavras maiores, ou seja, pode não ser possível imprimi-las da maneira correta.
- * TODO: Adicionar OpenMP.
  *
  * @param *vetor: ponteiro para o vetor de registros.
  * @param t_vetor: tamanho do vetor de registros.
@@ -173,7 +172,6 @@ int main(int argc, char **argv)
 		if(id == 0) //PROCESSO QUE VAI APENAS CONTABILIZAR A QUANTIDADE DE PALAVRAS GERADAS E IMPRIMIR OS RESULTADOS NA TELA
 		{
 			MPI_Recv(&mensagem,2,MPI_LONG,MPI_ANY_SOURCE,0,MPI_COMM_WORLD,&status);
-			//MPI_Bcast(&posicao,1,MPI_LONG,1,MPI_COMM_WORLD);
 			
 			//printf("Recebida a posição %ld\n",mensagem[1]);
 			//fflush(stdout);
@@ -203,7 +201,6 @@ int main(int argc, char **argv)
 				cont_menor++;
 				menor[posicao].flag_achado = 1;
 
-				//MPI_Bcast(&posicao,1,MPI_LONG,id,MPI_COMM_WORLD);
 				enviarAchadoGalera(id,p,VETOR_MENOR,posicao);//Envia a mensagem para os outros nós 
 
 				if (t_palavra > 1) //só procura no vetor de maiores se o length for maior do que 1
@@ -214,35 +211,23 @@ int main(int argc, char **argv)
 			}
 			
 			MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&flag_recebimento,&status); //verifica se foram recebidos alguma mensagem, flag_recebido será true se houver mensagens recebidas
-			//printf("MPI_SOURCE: %d\n",status.MPI_SOURCE);
 			if(flag_recebimento)
 			{
 				flag_recebimento = 0;
 				MPI_Recv(&mensagem,2,MPI_LONG,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+
 				MPI_Get_count(&status,MPI_LONG,&cont_recebimento);
-				//printf("EU SOU O PROCESSO %d e recebi uma %d do processo %d mensagem\n",id,cont_recebimento,status.MPI_SOURCE);
-			//if(request != NULL)
-			//{
 				if (mensagem[0] == VETOR_MENOR) //se é o vetor menor
 				{
 					menor[mensagem[1]].flag_achado = 1;
 					cont_menor++;
-					//buscarVetorMaior(maior,t_maior,palavra,&cont_maior,id,p);
+					buscarVetorMaior(maior,t_maior,palavra,&cont_maior,id,p);
 				}
 				else //se é o maior
 				{
 					maior[mensagem[1]].flag_achado = 1;
 					cont_maior++;
 				}
-			/*	MPI_Request_free(request);
-				request = NULL;
-			}
-			else
-			{
-				printf("Não tinha nada para receber quando eu tinha %ld palavras, daí eu continuei",cont_menor+cont_maior);
-			}
-			MPI_Request_get_status(request,&flag_recebimento,&status);
-			printf("O status devolvido foi %d\n",flag_recebimento);*/
 			}
 
 

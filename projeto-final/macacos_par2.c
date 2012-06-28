@@ -112,6 +112,7 @@ void buscarVetorMaior(registro *vetor, int t_vetor, char *palavra, long int *con
 	register int j=0;	
 	int t_palavra = strlen(palavra);
 	char *pos=NULL;
+	long int mensagem[2];
 
 	#pragma omp for private(j,pos)
 	for(i=0; i<t_vetor; i++) //corre o vetor
@@ -140,7 +141,9 @@ void buscarVetorMaior(registro *vetor, int t_vetor, char *palavra, long int *con
 				vetor[i].flag_achado = 1;
 
 				//Envia a mensagem para os outros nós
-				enviarAchadoGalera(id,numproc,VETOR_MAIOR,i);
+				//enviarAchadoGalera(id,numproc,VETOR_MAIOR,i);
+				mensagem[0]=VETOR_MAIOR, mensagem[1]=i;
+				MPI_Send(&mensagem,2,MPI_LONG,0,0,MPI_COMM_WORLD);
 			}
 		}
 	}
@@ -227,7 +230,7 @@ int main(int argc, char **argv)
 				{
 					menor[mensagem[1]].flag_achado = 1;
 					cont_menor++;
-					//buscarVetorMaior(maior,t_maior,palavra,&cont_maior,id,p);
+					buscarVetorMaior(maior,t_maior,palavra,&cont_maior,id,p);
 				}
 				else //se é o maior
 				{
