@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 	
 	time_inicial = time(NULL);
 	
-	while(cont_menor < t_menor/5)
+	while((cont_menor + cont_maior) < ((t_menor + t_maior)/5))
 	{
 		if(id == 0) //PROCESSO QUE VAI APENAS CONTABILIZAR A QUANTIDADE DE PALAVRAS GERADAS E IMPRIMIR OS RESULTADOS NA TELA
 		{
