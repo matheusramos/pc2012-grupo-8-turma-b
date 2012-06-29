@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
 	palavra = (char *) malloc((T_STR_MENOR+1)*sizeof(char)); //só tem o tamanho da palavra menor, que vão ser o tamanho máximo gerado.
 	
-	while(cont_menor < t_menor/10)
+	while((cont_menor + cont_maior) < ((t_menor + t_maior)/10))
 	{
 		palavra[t_palavra++] = gerarCaractere(0,conta_aleat++); //gera caractere aleatório
 		palavra[t_palavra] = '\0'; //marca o fim da string
