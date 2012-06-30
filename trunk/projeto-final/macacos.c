@@ -22,7 +22,7 @@ int indicarBacktracking(registro *vetor, int t_vetor, int posicao, char *palavra
 	if(strlen(palavra) == T_STR_MENOR) //se a palavra já tem o máximo de caracteres realiza o backtracking
 		return 1;
 	if(strlen(palavra) == 0)
-		return 0;
+		return 0; 
 
 	//Definir a posicao anterior, atual e posterior
 	atual = vetor[posicao].flag_achado? -1 : posicao;
