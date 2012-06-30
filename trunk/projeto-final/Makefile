@@ -1,5 +1,5 @@
 all: trata_arquivo macacos macacos_par
-CC = gcc
+CC = gcc-4.2
 MPICC = mpicc
 C_FLAGS = -g -fopenmp -Wall
 
